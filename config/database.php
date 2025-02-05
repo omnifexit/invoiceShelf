@@ -19,7 +19,7 @@ return [
             'engine' => null,
 
             'dump' => [
-                'dump_binary_path' => '/usr/bin/',
+                'dump_binary_path' => '/usr/local/bin/',
                 'use_single_transaction' => true,
                 'timeout' => 60,
             ],
