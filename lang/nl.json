@@ -394,6 +394,7 @@
     "unpaid": "Onbetaald",
     "viewed": "Bekeken",
     "overdue": "Over tijd",
+    "export_csv": "Exporteren als CSV",
     "completed": "Voltooid",
     "customer": "Klant",
     "paid_status": "Betaling",

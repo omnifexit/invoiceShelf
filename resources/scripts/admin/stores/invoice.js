@@ -128,6 +128,20 @@ export const useInvoiceStore = (useWindow = false) => {
         })
       },
 
+      exportInvoices(params) {
+        return new Promise((resolve, reject) => {
+          axios
+            .get(`/api/v1/invoices/export`, { params, responseType: 'blob' })
+            .then((response) => {
+              resolve(response)
+            })
+            .catch((err) => {
+              handleError(err)
+              reject(err)
+            })
+        })
+      },
+
       fetchInvoice(id) {
         return new Promise((resolve, reject) => {
           axios

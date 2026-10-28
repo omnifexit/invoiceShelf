@@ -24,6 +24,20 @@
           </template>
         </BaseButton>
 
+        <BaseButton
+          v-show="invoiceStore.invoiceTotalCount"
+          variant="primary-outline"
+          class="ml-4"
+          :loading="isExporting"
+          :disabled="isExporting"
+          @click="exportCsv"
+        >
+          <template #left="slotProps">
+            <BaseIcon name="DownloadIcon" :class="slotProps.class" />
+          </template>
+          {{ $t('invoices.export_csv') }}
+        </BaseButton>
+
         <router-link
           v-if="userStore.hasAbilities(abilities.CREATE_INVOICE)"
           to="invoices/create"
@@ -321,6 +335,8 @@ const status = ref([
   ,
 ])
 const isRequestOngoing = ref(true)
+const isExporting = ref(false)
+const lastSort = ref({ orderByField: 'created_at', orderBy: 'desc' })
 const activeTab = ref('general.draft')
 const router = useRouter()
 const userStore = useUserStore()
@@ -415,16 +431,26 @@ function refreshTable() {
   table.value && table.value.refresh()
 }
 
-async function fetchData({ page, filter, sort }) {
-  let data = {
+function getFilterParams() {
+  return {
     customer_id: filters.customer_id,
     status: filters.status,
     from_date: filters.from_date,
     to_date: filters.to_date,
     invoice_number: filters.invoice_number,
     overdue: filters.overdue ? 1 : '',
+  }
+}
+
+async function fetchData({ page, filter, sort }) {
+  lastSort.value = {
     orderByField: sort.fieldName || 'created_at',
     orderBy: sort.order || 'desc',
+  }
+
+  let data = {
+    ...getFilterParams(),
+    ...lastSort.value,
     page,
   }
 
@@ -445,6 +471,36 @@ async function fetchData({ page, filter, sort }) {
       totalCount: response.data.meta.total,
       limit: 10,
     },
+  }
+}
+
+async function exportCsv() {
+  isExporting.value = true
+
+  try {
+    const response = await invoiceStore.exportInvoices({
+      ...getFilterParams(),
+      ...lastSort.value,
+    })
+
+    const disposition = response.headers['content-disposition'] || ''
+    const match = disposition.match(/filename="?([^";]+)"?/)
+    const fileName = match ? match[1] : 'invoices.csv'
+
+    const url = window.URL.createObjectURL(
+      new Blob([response.data], { type: 'text/csv' })
+    )
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', fileName)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+  } catch (e) {
+    // errors are handled in the store
+  } finally {
+    isExporting.value = false
   }
 }
 
