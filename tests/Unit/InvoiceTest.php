@@ -193,3 +193,33 @@ test('create taxes', function () {
         'amount' => $tax['amount'],
     ]);
 });
+
+test('apply filters with overdue only returns overdue invoices', function () {
+    $overdue = Invoice::factory()->create(['overdue' => true]);
+    $notOverdue = Invoice::factory()->create(['overdue' => false]);
+
+    $ids = Invoice::applyFilters(['overdue' => '1'])->pluck('id');
+
+    expect($ids)->toContain($overdue->id)
+        ->not->toContain($notOverdue->id);
+});
+
+test('apply filters ignores overdue filter with false string', function () {
+    $overdue = Invoice::factory()->create(['overdue' => true]);
+    $notOverdue = Invoice::factory()->create(['overdue' => false]);
+
+    $ids = Invoice::applyFilters(['overdue' => 'false'])->pluck('id');
+
+    expect($ids)->toContain($overdue->id)
+        ->toContain($notOverdue->id);
+});
+
+test('where overdue scope only returns overdue invoices', function () {
+    $overdue = Invoice::factory()->create(['overdue' => true]);
+    $notOverdue = Invoice::factory()->create(['overdue' => false]);
+
+    $ids = Invoice::whereOverdue()->pluck('id');
+
+    expect($ids)->toContain($overdue->id)
+        ->not->toContain($notOverdue->id);
+});
