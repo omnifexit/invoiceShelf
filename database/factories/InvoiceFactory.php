@@ -9,6 +9,7 @@ use App\Models\RecurringInvoice;
 use App\Models\User;
 use App\Services\SerialNumberFormatter;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Carbon;
 
 class InvoiceFactory extends Factory
 {
@@ -85,7 +86,11 @@ class InvoiceFactory extends Factory
 
         return [
             'invoice_date' => $this->faker->date('Y-m-d', 'now'),
-            'due_date' => $this->faker->date('Y-m-d', 'now'),
+            'due_date' => function (array $invoice) {
+                return Carbon::parse($invoice['invoice_date'])
+                    ->addDays($this->faker->numberBetween(0, 30))
+                    ->format('Y-m-d');
+            },
             'invoice_number' => $sequenceNumber->getNextNumber(),
             'sequence_number' => $sequenceNumber->nextSequenceNumber,
             'customer_sequence_number' => $sequenceNumber->nextCustomerSequenceNumber,
