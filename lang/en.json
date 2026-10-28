@@ -450,6 +450,7 @@
     "cloned_successfully": "Invoice cloned successfully",
     "clone_invoice": "Clone Invoice",
     "confirm_clone": "This invoice will be cloned into a new Invoice",
+    "duplicate": "Duplicate",
     "item": {
       "title": "Item Title",
       "description": "Description",

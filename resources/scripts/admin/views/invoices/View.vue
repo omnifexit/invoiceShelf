@@ -1,7 +1,7 @@
 <script setup>
 import { useI18n } from 'vue-i18n'
 import { computed, reactive, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { debounce } from 'lodash'
 
 import { useInvoiceStore } from '@/scripts/admin/stores/invoice'
@@ -23,8 +23,10 @@ const dialogStore = useDialogStore()
 const { t } = useI18n()
 const invoiceData = ref(null)
 const route = useRoute()
+const router = useRouter()
 
 const isMarkAsSent = ref(false)
+const isDuplicating = ref(false)
 const isLoading = ref(false)
 
 const invoiceList = ref(null)
@@ -103,6 +105,24 @@ async function onSendInvoice(id) {
     id: invoiceData.value.id,
     data: invoiceData.value,
   })
+}
+
+async function onDuplicateInvoice() {
+  isDuplicating.value = true
+
+  try {
+    const response = await invoiceStore.cloneInvoice({
+      id: invoiceData.value.id,
+    })
+
+    invoiceList.value = []
+    loadInvoices()
+    router.push(`/admin/invoices/${response.data.data.id}/view`)
+  } catch (error) {
+    // error notification is already shown by the store
+  } finally {
+    isDuplicating.value = false
+  }
 }
 
 function hasActiveUrl(id) {
@@ -274,6 +294,18 @@ onSearched = debounce(onSearched, 500)
             {{ $t('invoices.record_payment') }}
           </BaseButton>
         </router-link>
+
+        <!-- Duplicate Invoice -->
+        <BaseButton
+          v-if="userStore.hasAbilities(abilities.CREATE_INVOICE)"
+          variant="primary-outline"
+          class="ml-3 text-sm"
+          :disabled="isDuplicating"
+          :loading="isDuplicating"
+          @click="onDuplicateInvoice"
+        >
+          {{ $t('invoices.duplicate') }}
+        </BaseButton>
 
         <!-- Invoice Dropdown  -->
         <InvoiceDropdown
