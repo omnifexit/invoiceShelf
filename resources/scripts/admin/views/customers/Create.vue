@@ -170,6 +170,27 @@
               />
             </BaseInputGroup>
 
+            <BaseInputGroup
+              :label="$t('customers.credit_limit')"
+              :help-text="$t('customers.credit_limit_help')"
+              :error="
+                v$.currentCustomer.credit_limit.$error &&
+                v$.currentCustomer.credit_limit.$errors[0].$message
+              "
+              :content-loading="isFetchingInitialData"
+            >
+              <BaseInput
+                v-model="creditLimit"
+                :content-loading="isFetchingInitialData"
+                type="number"
+                min="0"
+                step="0.01"
+                name="credit_limit"
+                :invalid="v$.currentCustomer.credit_limit.$error"
+                @input="v$.currentCustomer.credit_limit.$touch()"
+              />
+            </BaseInputGroup>
+
           </BaseInputGrid>
         </div>
 
@@ -594,6 +615,7 @@ import {
   email,
   sameAs,
   requiredIf,
+  minValue,
 } from '@vuelidate/validators'
 import useVuelidate from '@vuelidate/core'
 import { useCustomerStore } from '@/scripts/admin/stores/customer'
@@ -648,6 +670,13 @@ const rules = computed(() => {
       },
       currency_id: {
         required: helpers.withMessage(t('validation.required'), required),
+      },
+
+      credit_limit: {
+        minValue: helpers.withMessage(
+          t('validation.credit_limit_minvalue'),
+          minValue(0)
+        ),
       },
 
       email: {
@@ -713,6 +742,20 @@ const rules = computed(() => {
       },
     },
   }
+})
+
+const creditLimit = computed({
+  get: () =>
+    customerStore.currentCustomer.credit_limit === null ||
+    customerStore.currentCustomer.credit_limit === undefined
+      ? null
+      : customerStore.currentCustomer.credit_limit / 100,
+  set: (value) => {
+    customerStore.currentCustomer.credit_limit =
+      value === null || value === '' || value === undefined
+        ? null
+        : Math.round(value * 100)
+  },
 })
 
 const getCustomerPortalUrl = computed(() => {

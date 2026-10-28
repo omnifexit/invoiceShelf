@@ -192,6 +192,8 @@
     "title": "Klanten",
     "prefix": "Voorvoegsel",
     "tax_id": "Tax ID",
+    "credit_limit": "Kredietlimiet",
+    "credit_limit_help": "Laat leeg voor geen kredietlimiet.",
     "add_customer": "Klant toevoegen",
     "contacts_list": "Klantenlijst",
     "name": "Naam",
@@ -381,6 +383,7 @@
     "mark_as_default_estimate_template_description": "Indien ingeschakeld, zal het geselecteerde sjabloon automatisch worden gekozen voor nieuwe offertes."
   },
   "invoices": {
+    "credit_limit_exceeded": "Kredietlimiet overschreden",
     "title": "Facturen",
     "download": "Downloaden",
     "pay_invoice": "Betaal factuur",
@@ -1540,6 +1543,7 @@
     "quantity_maxlength": "Het aantal mag niet groter zijn dan 20 cijfers.",
     "price_maxlength": "Prijs mag niet groter zijn dan 20 cijfers.",
     "price_minvalue": "Prijs moet hoger zijn dan 0.",
+    "credit_limit_minvalue": "Kredietlimiet mag niet negatief zijn.",
     "amount_maxlength": "Bedrag mag niet groter zijn dan 20 cijfers.",
     "amount_minvalue": "Bedrag moet groter zijn dan 0.",
     "discount_maxlength": "Korting mag niet meer zijn dan maximale korting",
