@@ -5,6 +5,7 @@ namespace App\Http\Controllers\V1\Admin\Dashboard;
 use App\Http\Controllers\Controller;
 use App\Models\Company;
 use App\Models\CompanySetting;
+use App\Models\CreditNote;
 use App\Models\Customer;
 use App\Models\Estimate;
 use App\Models\Expense;
@@ -60,14 +61,20 @@ class DashboardController extends Controller
         }
 
         while ($monthCounter < 12) {
+            $monthCredited = (int) CreditNote::whereBetween(
+                'credit_note_date',
+                [$start->format('Y-m-d'), $end->format('Y-m-d')]
+            )
+                ->whereCompany()
+                ->sum('base_amount');
             array_push(
                 $invoice_totals,
-                Invoice::whereBetween(
+                (int) Invoice::whereBetween(
                     'invoice_date',
                     [$start->format('Y-m-d'), $end->format('Y-m-d')]
                 )
                     ->whereCompany()
-                    ->sum('base_total')
+                    ->sum('base_total') - $monthCredited
             );
             array_push(
                 $expense_totals,
@@ -101,12 +108,19 @@ class DashboardController extends Controller
 
         $start->subMonth()->endOfMonth();
 
-        $total_sales = Invoice::whereBetween(
+        $total_credited = (int) CreditNote::whereBetween(
+            'credit_note_date',
+            [$startDate->format('Y-m-d'), $start->format('Y-m-d')]
+        )
+            ->whereCompany()
+            ->sum('base_amount');
+
+        $total_sales = (int) Invoice::whereBetween(
             'invoice_date',
             [$startDate->format('Y-m-d'), $start->format('Y-m-d')]
         )
             ->whereCompany()
-            ->sum('base_total');
+            ->sum('base_total') - $total_credited;
 
         $total_receipts = Payment::whereBetween(
             'payment_date',
@@ -136,6 +150,7 @@ class DashboardController extends Controller
         $total_invoice_count = Invoice::whereCompany()
             ->count();
         $total_estimate_count = Estimate::whereCompany()->count();
+        $total_credit_note_count = CreditNote::whereCompany()->count();
         $total_amount_due = Invoice::whereCompany()
             ->sum('base_due_amount');
 
@@ -152,6 +167,7 @@ class DashboardController extends Controller
             'total_customer_count' => $total_customer_count,
             'total_invoice_count' => $total_invoice_count,
             'total_estimate_count' => $total_estimate_count,
+            'total_credit_note_count' => $total_credit_note_count,
 
             'recent_due_invoices' => BouncerFacade::can('view-invoice', Invoice::class) ? $recent_due_invoices : [],
             'recent_estimates' => BouncerFacade::can('view-estimate', Estimate::class) ? $recent_estimates : [],
@@ -159,6 +175,7 @@ class DashboardController extends Controller
             'chart_data' => $chart_data,
 
             'total_sales' => $total_sales,
+            'total_credited' => $total_credited,
             'total_receipts' => $total_receipts,
             'total_expenses' => $total_expenses,
             'total_net_income' => $total_net_income,

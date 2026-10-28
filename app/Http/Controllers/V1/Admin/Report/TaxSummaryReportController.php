@@ -5,7 +5,9 @@ namespace App\Http\Controllers\V1\Admin\Report;
 use App\Http\Controllers\Controller;
 use App\Models\Company;
 use App\Models\CompanySetting;
+use App\Models\CreditNote;
 use App\Models\Currency;
+use App\Models\Invoice;
 use App\Models\Tax;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -42,6 +44,14 @@ class TaxSummaryReportController extends Controller
             $totalAmount += $taxType->total_tax_amount;
         }
 
+        // Only credited tax on paid invoices counts, the same basis as the taxes above.
+        $creditedTax = (int) CreditNote::whereCompanyId($company->id)
+            ->whereBetween('credit_note_date', [$request->from_date, $request->to_date])
+            ->whereHas('invoice', function ($query) {
+                $query->where('paid_status', Invoice::STATUS_PAID);
+            })
+            ->sum('base_tax');
+
         $dateFormat = CompanySetting::getSetting('carbon_date_format', $company->id);
         $from_date = Carbon::createFromFormat('Y-m-d', $request->from_date)->translatedFormat($dateFormat);
         $to_date = Carbon::createFromFormat('Y-m-d', $request->to_date)->translatedFormat($dateFormat);
@@ -66,6 +76,8 @@ class TaxSummaryReportController extends Controller
         view()->share([
             'taxTypes' => $taxTypes,
             'totalTaxAmount' => $totalAmount,
+            'totalCreditedTaxAmount' => $creditedTax,
+            'netTaxAmount' => $totalAmount - $creditedTax,
             'colorSettings' => $colorSettings,
             'company' => $company,
             'from_date' => $from_date,

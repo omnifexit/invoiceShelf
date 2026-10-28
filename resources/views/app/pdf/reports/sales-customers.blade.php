@@ -180,6 +180,20 @@
                     </td>
                 </tr>
                 @endforeach
+                @foreach ($customer->creditNotes as $creditNote)
+                <tr>
+                    <td>
+                        <p class="sales-information-text">
+                            {{ $creditNote->formattedCreditNoteDate }} ({{ $creditNote->credit_note_number }})
+                        </p>
+                    </td>
+                    <td>
+                        <p class="sales-amount">
+                            - {!! format_money_pdf($creditNote->base_amount, $currency) !!}
+                        </p>
+                    </td>
+                </tr>
+                @endforeach
             </table>
         </div>
         <table class="sales-total-indicator-table">
@@ -196,6 +210,18 @@
 
 
     <table class="report-footer">
+        @if ($totalCreditedAmount > 0)
+        <tr>
+            <td>
+                <p class="report-footer-label">@lang('pdf_total_credited_label')</p>
+            </td>
+            <td>
+                <p class="report-footer-value">
+                    - {!! format_money_pdf($totalCreditedAmount, $currency) !!}
+                </p>
+            </td>
+        </tr>
+        @endif
         <tr>
             <td>
                 <p class="report-footer-label">@lang('pdf_total_sales_label')</p>
