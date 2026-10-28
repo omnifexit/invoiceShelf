@@ -400,6 +400,28 @@
     "overdue": "Overdue",
     "show_only_overdue": "Only overdue invoices",
     "export_csv": "Export as CSV",
+    "export_ubl": "Export as UBL",
+    "ubl": {
+      "errors": {
+        "seller_name_missing": "Your company has no name. Add it in Settings > Company Information.",
+        "seller_vat_missing": "Your company has no VAT number. Add it in Settings > Company Information.",
+        "seller_vat_invalid": "Your company's VAT number is invalid. It must start with the two-letter country code, e.g. NL123456789B01.",
+        "seller_address_missing": "Your company address is incomplete. Street, city, postal code and country are required.",
+        "seller_country_unsupported": "E-invoicing is not supported for the country of your company's VAT number.",
+        "buyer_missing": "The invoice has no customer.",
+        "buyer_name_missing": "The customer has no name.",
+        "buyer_vat_missing": "The customer has no VAT number (Tax ID).",
+        "buyer_vat_invalid": "The customer's VAT number is invalid. It must start with the two-letter country code.",
+        "buyer_address_missing": "The customer's billing address is incomplete. Street, city, postal code and country are required.",
+        "buyer_country_unsupported": "E-invoicing is not supported for the country of the customer's VAT number.",
+        "currency_missing": "The invoice has no currency.",
+        "no_items": "The invoice has no items.",
+        "compound_tax_unsupported": "Compound taxes cannot be exported as UBL.",
+        "multiple_taxes_per_line": "Each invoice line may have only one VAT rate in UBL.",
+        "totals_mismatch": "The invoice totals do not match the EN 16931 calculation. Check that VAT is calculated on the discounted amount.",
+        "generic": "The invoice could not be exported as UBL."
+      }
+    },
     "completed": "Completed",
     "customer": "CUSTOMER",
     "paid_status": "PAID STATUS",

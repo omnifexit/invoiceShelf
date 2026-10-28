@@ -142,6 +142,49 @@ export const useInvoiceStore = (useWindow = false) => {
         })
       },
 
+      exportInvoiceUbl(id) {
+        return new Promise((resolve, reject) => {
+          axios
+            .get(`/api/v1/invoices/${id}/ubl`, { responseType: 'blob' })
+            .then((response) => {
+              resolve(response)
+            })
+            .catch(async (err) => {
+              let data = err.response?.data
+
+              // With responseType blob the JSON error body arrives as a Blob.
+              if (data instanceof Blob) {
+                try {
+                  data = JSON.parse(await data.text())
+                } catch (e) {
+                  data = null
+                }
+              }
+
+              const errors = Array.isArray(data?.ubl_errors)
+                ? data.ubl_errors
+                : []
+
+              if (errors.length) {
+                errors.forEach((error) => {
+                  notificationStore.showNotification({
+                    type: 'error',
+                    message: global.t(error),
+                  })
+                })
+              } else if (err.response?.status === 422) {
+                notificationStore.showNotification({
+                  type: 'error',
+                  message: global.t('invoices.ubl.errors.generic'),
+                })
+              } else {
+                handleError(err)
+              }
+              reject(err)
+            })
+        })
+      },
+
       fetchInvoice(id) {
         return new Promise((resolve, reject) => {
           axios
