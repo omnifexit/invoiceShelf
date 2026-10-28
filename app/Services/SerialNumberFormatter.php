@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\CompanySetting;
 use App\Models\Customer;
+use Illuminate\Support\Str;
 
 /**
  * SerialNumberFormatter
@@ -80,7 +81,7 @@ class SerialNumberFormatter
      */
     public function getNextNumber($data = null)
     {
-        $modelName = strtolower(class_basename($this->model));
+        $modelName = Str::snake(class_basename($this->model));
         $settingKey = $modelName.'_number_format';
         $companyId = $this->company;
 

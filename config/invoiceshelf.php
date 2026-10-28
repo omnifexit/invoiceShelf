@@ -343,6 +343,16 @@ return [
             'model' => RecurringInvoice::class,
         ],
         [
+            'title' => 'navigation.credit_notes',
+            'group' => 2,
+            'link' => '/admin/credit-notes',
+            'icon' => 'ReceiptRefundIcon',
+            'name' => 'Credit Notes',
+            'owner_only' => false,
+            'ability' => 'view-invoice',
+            'model' => Invoice::class,
+        ],
+        [
             'title' => 'navigation.payments',
             'group' => 2,
             'link' => '/admin/payments',

@@ -105,6 +105,14 @@ class Invoice extends Model implements HasMedia
     }
 
     /**
+     * @return HasMany<CreditNote, $this>
+     */
+    public function creditNotes(): HasMany
+    {
+        return $this->hasMany(CreditNote::class);
+    }
+
+    /**
      * @return HasMany<PaymentReminder, $this>
      */
     public function paymentReminders(): HasMany
@@ -913,6 +921,21 @@ class Invoice extends Model implements HasMedia
             '{INVOICE_NUMBER}' => $this->invoice_number,
             '{INVOICE_REF_NUMBER}' => $this->reference_number,
         ];
+    }
+
+    /**
+     * The amount in cents that may still be credited: never more than the
+     * uncredited part of the total, nor more than the amount still open.
+     */
+    public function getCreditableAmount(): int
+    {
+        if ($this->status === self::STATUS_DRAFT || (int) $this->total <= 0) {
+            return 0;
+        }
+
+        $uncredited = (int) $this->total - (int) $this->creditNotes()->sum('amount');
+
+        return max(0, min($uncredited, (int) $this->due_amount));
     }
 
     public function addInvoicePayment($amount)

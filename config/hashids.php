@@ -10,6 +10,7 @@
  */
 
 use App\Models\Company;
+use App\Models\CreditNote;
 use App\Models\EmailLog;
 use App\Models\Estimate;
 use App\Models\Invoice;
@@ -57,6 +58,11 @@ return [
             'salt' => Payment::class.config('app.key'),
             'length' => 20,
             'alphabet' => 'aqW3eR2Icf0jp65Gl7UVS1dhyb8Mn9XKTZ4O',
+        ],
+        CreditNote::class => [
+            'salt' => CreditNote::class.config('app.key'),
+            'length' => 20,
+            'alphabet' => 'Hk3Tq8ZcW1mR5vN0bY7pJ2xL9sD4gF6tQaEu',
         ],
         Company::class => [
             'salt' => Company::class.config('app.key'),

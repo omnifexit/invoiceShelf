@@ -81,6 +81,14 @@ class Customer extends Authenticatable implements HasMedia
         return $this->hasMany(Invoice::class);
     }
 
+    /**
+     * @return HasMany<CreditNote, $this>
+     */
+    public function creditNotes(): HasMany
+    {
+        return $this->hasMany(CreditNote::class);
+    }
+
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);
@@ -144,6 +152,10 @@ class Customer extends Authenticatable implements HasMedia
 
             if ($customer->estimates()->exists()) {
                 $customer->estimates()->delete();
+            }
+
+            if ($customer->creditNotes()->exists()) {
+                $customer->creditNotes()->delete();
             }
 
             if ($customer->invoices()->exists()) {
