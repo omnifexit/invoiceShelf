@@ -47,6 +47,7 @@ class Customer extends Authenticatable implements HasMedia
     {
         return [
             'enable_portal' => 'boolean',
+            'credit_limit' => 'integer',
         ];
     }
 
