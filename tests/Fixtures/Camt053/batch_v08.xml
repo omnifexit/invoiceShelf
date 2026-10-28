@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:camt.053.001.08">
+  <BkToCstmrStmt>
+    <GrpHdr>
+      <MsgId>STMT-2026-304-MSG</MsgId>
+      <CreDtTm>2026-10-28T06:00:00+01:00</CreDtTm>
+    </GrpHdr>
+    <Stmt>
+      <Id>STMT-2026-304</Id>
+      <CreDtTm>2026-10-28T06:00:00+01:00</CreDtTm>
+      <Acct>
+        <Id><IBAN>NL91ABNA0417164300</IBAN></Id>
+        <Ccy>EUR</Ccy>
+      </Acct>
+      <Ntry>
+        <Amt Ccy="EUR">300.50</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <Sts><Cd>BOOK</Cd></Sts>
+        <BookgDt><DtTm>2026-10-26T10:15:00+01:00</DtTm></BookgDt>
+        <ValDt><Dt>2026-10-26</Dt></ValDt>
+        <AcctSvcrRef>BATCH-0001</AcctSvcrRef>
+        <BkTxCd><Domn><Cd>PMNT</Cd><Fmly><Cd>RCDT</Cd><SubFmlyCd>ESCT</SubFmlyCd></Fmly></Domn></BkTxCd>
+        <NtryDtls>
+          <Btch><NbOfTxs>2</NbOfTxs></Btch>
+          <TxDtls>
+            <Refs><AcctSvcrRef>BATCH-0001-1</AcctSvcrRef><EndToEndId>E2E-BATCH-1</EndToEndId></Refs>
+            <Amt Ccy="EUR">200.00</Amt>
+            <CdtDbtInd>CRDT</CdtDbtInd>
+            <RltdPties>
+              <Dbtr><Pty><Nm>Van Dijk Installatie</Nm></Pty></Dbtr>
+              <DbtrAcct><Id><IBAN>NL30INGB0001111111</IBAN></Id></DbtrAcct>
+            </RltdPties>
+            <RmtInf><Ustrd>Factuur 2026-118</Ustrd></RmtInf>
+          </TxDtls>
+          <TxDtls>
+            <Refs><AcctSvcrRef>BATCH-0001-2</AcctSvcrRef><EndToEndId>E2E-BATCH-2</EndToEndId></Refs>
+            <Amt Ccy="EUR">100.50</Amt>
+            <CdtDbtInd>CRDT</CdtDbtInd>
+            <RltdPties>
+              <Dbtr><Pty><Nm>Mulder Transport</Nm></Pty></Dbtr>
+              <DbtrAcct><Id><IBAN>NL31RABO0002222222</IBAN></Id></DbtrAcct>
+            </RltdPties>
+            <RmtInf>
+              <Strd><CdtrRefInf><Ref>RF18539007547034</Ref></CdtrRefInf></Strd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">25.00</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <Sts><Cd>BOOK</Cd></Sts>
+        <BookgDt><Dt>2026-10-27</Dt></BookgDt>
+        <ValDt><Dt>2026-10-27</Dt></ValDt>
+        <NtryDtls>
+          <TxDtls>
+            <Refs><EndToEndId>NOTPROVIDED</EndToEndId></Refs>
+            <RltdPties>
+              <Dbtr><Pty><Nm>Stichting Buurthuis</Nm></Pty></Dbtr>
+              <DbtrAcct><Id><IBAN>NL32ABNA0003333333</IBAN></Id></DbtrAcct>
+            </RltdPties>
+            <RmtInf><Ustrd>Contributie</Ustrd></RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">25.00</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <Sts><Cd>BOOK</Cd></Sts>
+        <BookgDt><Dt>2026-10-27</Dt></BookgDt>
+        <ValDt><Dt>2026-10-27</Dt></ValDt>
+        <NtryDtls>
+          <TxDtls>
+            <Refs><EndToEndId>NOTPROVIDED</EndToEndId></Refs>
+            <RltdPties>
+              <Dbtr><Pty><Nm>Stichting Buurthuis</Nm></Pty></Dbtr>
+              <DbtrAcct><Id><IBAN>NL32ABNA0003333333</IBAN></Id></DbtrAcct>
+            </RltdPties>
+            <RmtInf><Ustrd>Contributie</Ustrd></RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">10.00</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <Sts><Cd>PDNG</Cd></Sts>
+        <BookgDt><Dt>2026-10-27</Dt></BookgDt>
+        <AddtlNtryInf>Pending credit</AddtlNtryInf>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">40.00</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <RvslInd>true</RvslInd>
+        <Sts><Cd>BOOK</Cd></Sts>
+        <BookgDt><Dt>2026-10-27</Dt></BookgDt>
+        <AddtlNtryInf>Reversal</AddtlNtryInf>
+      </Ntry>
+    </Stmt>
+  </BkToCstmrStmt>
+</Document>
