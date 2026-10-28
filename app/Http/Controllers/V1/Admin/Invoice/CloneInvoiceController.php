@@ -15,13 +15,14 @@ use Vinkla\Hashids\Facades\Hashids;
 class CloneInvoiceController extends Controller
 {
     /**
-     * Mail a specific invoice to the corresponding customer's email address.
+     * Duplicate an existing invoice into a new draft invoice.
      *
      * @return JsonResponse
      */
     public function __invoke(Request $request, Invoice $invoice)
     {
         $this->authorize('create', Invoice::class);
+        $this->authorize('view', $invoice);
 
         $date = Carbon::now();
 
@@ -65,7 +66,8 @@ class CloneInvoiceController extends Controller
             'customer_sequence_number' => $serial->nextCustomerSequenceNumber,
             'reference_number' => $invoice->reference_number,
             'customer_id' => $invoice->customer_id,
-            'company_id' => $request->header('company'),
+            'company_id' => $invoice->company_id,
+            'creator_id' => $request->user()->id,
             'template_name' => $invoice->template_name,
             'status' => Invoice::STATUS_DRAFT,
             'paid_status' => Invoice::STATUS_UNPAID,
@@ -97,8 +99,15 @@ class CloneInvoiceController extends Controller
         $invoiceItems = $invoice->items->toArray();
 
         foreach ($invoiceItems as $invoiceItem) {
-            $invoiceItem['company_id'] = $request->header('company');
-            $invoiceItem['name'] = $invoiceItem['name'];
+            unset(
+                $invoiceItem['id'],
+                $invoiceItem['invoice_id'],
+                $invoiceItem['recurring_invoice_id'],
+                $invoiceItem['created_at'],
+                $invoiceItem['updated_at']
+            );
+
+            $invoiceItem['company_id'] = $invoice->company_id;
             $invoiceItem['exchange_rate'] = $exchange_rate;
             $invoiceItem['base_price'] = $invoiceItem['price'] * $exchange_rate;
             $invoiceItem['base_discount_val'] = $invoiceItem['discount_val'] * $exchange_rate;
@@ -109,9 +118,10 @@ class CloneInvoiceController extends Controller
 
             if (array_key_exists('taxes', $invoiceItem) && $invoiceItem['taxes']) {
                 foreach ($invoiceItem['taxes'] as $tax) {
-                    $tax['company_id'] = $request->header('company');
+                    unset($tax['id'], $tax['invoice_id'], $tax['invoice_item_id'], $tax['created_at'], $tax['updated_at']);
+                    $tax['company_id'] = $invoice->company_id;
 
-                    if ($tax['amount']) {
+                    if ($tax['amount'] !== null) {
                         $item->taxes()->create($tax);
                     }
                 }
@@ -120,7 +130,8 @@ class CloneInvoiceController extends Controller
 
         if ($invoice->taxes) {
             foreach ($invoice->taxes->toArray() as $tax) {
-                $tax['company_id'] = $request->header('company');
+                unset($tax['id'], $tax['invoice_id'], $tax['invoice_item_id'], $tax['created_at'], $tax['updated_at']);
+                $tax['company_id'] = $invoice->company_id;
                 $newInvoice->taxes()->create($tax);
             }
         }

@@ -449,6 +449,7 @@
     "cloned_successfully": "Factuur succesvol gekloond",
     "clone_invoice": "Factuur klonen",
     "confirm_clone": "Deze factuur wordt gekloond in een nieuwe factuur",
+    "duplicate": "Dupliceren",
     "item": {
       "title": "Titel van het item",
       "description": "Omschrijving",
