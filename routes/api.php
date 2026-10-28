@@ -11,6 +11,7 @@ use App\Http\Controllers\V1\Admin\BankStatement\ImportBankStatementController;
 use App\Http\Controllers\V1\Admin\BankStatement\LinkBankTransactionController;
 use App\Http\Controllers\V1\Admin\Company\CompaniesController;
 use App\Http\Controllers\V1\Admin\Company\CompanyController as AdminCompanyController;
+use App\Http\Controllers\V1\Admin\CreditNote\CreditNotesController;
 use App\Http\Controllers\V1\Admin\Customer\CustomersController;
 use App\Http\Controllers\V1\Admin\Customer\CustomerStatsController;
 use App\Http\Controllers\V1\Admin\CustomField\CustomFieldsController;
@@ -286,6 +287,13 @@ Route::prefix('/v1')->group(function () {
             Route::post('/invoices/parse-text', ParseInvoiceTextController::class)->middleware('throttle:20,1');
 
             Route::apiResource('invoices', InvoicesController::class);
+
+            // Credit Notes
+            // ----------------------------------
+
+            Route::post('/credit-notes/delete', [CreditNotesController::class, 'delete']);
+
+            Route::apiResource('credit-notes', CreditNotesController::class)->only(['index', 'store', 'show']);
 
             // Recurring Invoice
             // -------------------------------------------------

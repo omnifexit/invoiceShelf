@@ -137,6 +137,11 @@ class Company extends Model implements HasMedia
         return $this->hasMany(Payment::class);
     }
 
+    public function creditNotes(): HasMany
+    {
+        return $this->hasMany(CreditNote::class);
+    }
+
     public function paymentMethods(): HasMany
     {
         return $this->hasMany(PaymentMethod::class);
@@ -246,6 +251,7 @@ class Company extends Model implements HasMedia
             'invoice_number_format' => '{{SERIES:INV}}{{DELIMITER:-}}{{SEQUENCE:6}}',
             'estimate_number_format' => '{{SERIES:EST}}{{DELIMITER:-}}{{SEQUENCE:6}}',
             'payment_number_format' => '{{SERIES:PAY}}{{DELIMITER:-}}{{SEQUENCE:6}}',
+            'credit_note_number_format' => '{{SERIES:CN}}{{DELIMITER:-}}{{SEQUENCE:6}}',
             'estimate_set_expiry_date_automatically' => 'YES',
             'estimate_expiry_date_days' => 7,
             'invoice_set_due_date_automatically' => 'YES',
@@ -285,6 +291,10 @@ class Company extends Model implements HasMedia
 
         if ($this->expenseCategories()->exists()) {
             $this->expenseCategories()->delete();
+        }
+
+        if ($this->creditNotes()->exists()) {
+            $this->creditNotes()->delete();
         }
 
         if ($this->payments()->exists()) {
