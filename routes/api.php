@@ -46,6 +46,7 @@ use App\Http\Controllers\V1\Admin\Invoice\CloneInvoiceController;
 use App\Http\Controllers\V1\Admin\Invoice\ExportInvoicesController;
 use App\Http\Controllers\V1\Admin\Invoice\InvoicesController;
 use App\Http\Controllers\V1\Admin\Invoice\InvoiceTemplatesController;
+use App\Http\Controllers\V1\Admin\Invoice\ParseInvoiceTextController;
 use App\Http\Controllers\V1\Admin\Invoice\SendInvoiceController;
 use App\Http\Controllers\V1\Admin\Invoice\SendInvoicePreviewController;
 use App\Http\Controllers\V1\Admin\Item\ItemsController;
@@ -274,6 +275,8 @@ Route::prefix('/v1')->group(function () {
             Route::get('/invoices/export', ExportInvoicesController::class);
 
             Route::get('/invoices/templates', InvoiceTemplatesController::class);
+
+            Route::post('/invoices/parse-text', ParseInvoiceTextController::class)->middleware('throttle:20,1');
 
             Route::apiResource('invoices', InvoicesController::class);
 

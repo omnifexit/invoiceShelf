@@ -477,7 +477,38 @@
     "marked_as_sent_message": "Invoice marked as sent successfully",
     "something_went_wrong": "something went wrong",
     "invalid_due_amount_message": "Total Invoice amount cannot be less than total paid amount for this Invoice. Please update the invoice or delete the associated payments to continue.",
-    "mark_as_default_invoice_template_description": "If enabled, the selected template will be automatically selected for new invoices."
+    "mark_as_default_invoice_template_description": "If enabled, the selected template will be automatically selected for new invoices.",
+    "ai": {
+      "title": "Create invoice with AI",
+      "description": "Describe the invoice by voice or text, e.g. \"Invoice for Jansen, three hours of consultancy at 85 euro, due in two weeks\".",
+      "start_listening": "Start dictation",
+      "stop_listening": "Stop dictation",
+      "listening": "Listening...",
+      "placeholder": "Describe the invoice...",
+      "fill_form": "Fill in form",
+      "speech_not_supported": "Speech recognition is not supported in this browser. Type the description instead.",
+      "speech_error": "Speech recognition failed. Try again or type the description.",
+      "review_hint": "The form has been filled in. Check everything and save the invoice yourself.",
+      "candidates": "Did you mean: {names}?",
+      "warnings": {
+        "customer_not_mentioned": "No customer was mentioned.",
+        "customer_not_found": "Customer \"{name}\" was not found. Select a customer.",
+        "customer_ambiguous": "Multiple customers match \"{name}\". Select the right customer.",
+        "item_not_found": "Item \"{name}\" was not found; it was added as a free text line.",
+        "item_ambiguous": "Multiple items match \"{name}\". Check line {index}.",
+        "quantity_missing": "No quantity for line {index}; it was set to 1.",
+        "price_missing": "No price for line {index}. Enter the price.",
+        "no_items": "No invoice lines were recognised.",
+        "invoice_date_invalid": "The invoice date was not recognised.",
+        "due_date_invalid": "The due date was not recognised.",
+        "due_date_before_invoice_date": "The recognised due date was before the invoice date and was ignored."
+      },
+      "errors": {
+        "gemini_not_configured": "AI is not configured. Ask the administrator to set GEMINI_API_KEY.",
+        "gemini_request_failed": "Gemini could not process the request. Try again later.",
+        "gemini_invalid_response": "Gemini returned an answer that could not be read. Rephrase and try again."
+      }
+    }
   },
   "recurring_invoices": {
     "title": "Recurring Invoices",

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -26,6 +27,9 @@ class Item extends Model
         ];
     }
 
+    /**
+     * @return BelongsTo<Unit, $this>
+     */
     public function unit(): BelongsTo
     {
         return $this->belongsTo(Unit::class, 'unit_id');
@@ -124,6 +128,34 @@ class Item extends Model
     public function scopeWhereCompany($query)
     {
         $query->where('items.company_id', request()->header('company'));
+    }
+
+    /**
+     * Find items of the current company by name: exact (case-insensitive) matches first, otherwise partial matches.
+     *
+     * @return Collection<int, Item>
+     */
+    public static function matchByName(string $name): Collection
+    {
+        $name = trim($name);
+
+        $exact = Item::whereCompany()
+            ->with('unit')
+            ->whereRaw('LOWER(items.name) = ?', [mb_strtolower($name)])
+            ->orderBy('items.name')
+            ->limit(6)
+            ->get();
+
+        if ($exact->isNotEmpty()) {
+            return $exact;
+        }
+
+        return Item::whereCompany()
+            ->with('unit')
+            ->where('items.name', 'LIKE', '%'.$name.'%')
+            ->orderBy('items.name')
+            ->limit(6)
+            ->get();
     }
 
     public function invoiceItems(): HasMany

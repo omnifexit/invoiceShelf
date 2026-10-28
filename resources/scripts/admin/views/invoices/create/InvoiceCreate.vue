@@ -67,6 +67,8 @@
         </template>
       </BasePageHeader>
 
+      <InvoiceAiAssistant v-if="!isEdit && !isLoadingContent" class="mt-6" />
+
       <!-- Select Customer & Basic Fields  -->
       <InvoiceBasicFields
         :v="v$"
@@ -165,6 +167,7 @@ import InvoiceItems from '@/scripts/admin/components/estimate-invoice-common/Cre
 import InvoiceTotal from '@/scripts/admin/components/estimate-invoice-common/CreateTotal.vue'
 import SelectTemplate from '@/scripts/admin/components/estimate-invoice-common/SelectTemplateButton.vue'
 import InvoiceBasicFields from './InvoiceCreateBasicFields.vue'
+import InvoiceAiAssistant from './InvoiceCreateAiAssistant.vue'
 import InvoiceCustomFields from '@/scripts/admin/components/custom-fields/CreateCustomFields.vue'
 import NoteFields from '@/scripts/admin/components/estimate-invoice-common/CreateNotesField.vue'
 import SelectTemplateModal from '@/scripts/admin/components/modal-components/SelectTemplateModal.vue'
