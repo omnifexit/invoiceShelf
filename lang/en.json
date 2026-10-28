@@ -395,6 +395,7 @@
     "viewed": "Viewed",
     "overdue": "Overdue",
     "show_only_overdue": "Only overdue invoices",
+    "export_csv": "Export as CSV",
     "completed": "Completed",
     "customer": "CUSTOMER",
     "paid_status": "PAID STATUS",
