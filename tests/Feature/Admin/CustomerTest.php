@@ -65,6 +65,51 @@ test('create customer', function () {
     ]);
 });
 
+test('create customer with credit limit', function () {
+    $customer = Customer::factory()->raw(['credit_limit' => 150000]);
+
+    postJson('api/v1/customers', $customer)
+        ->assertOk()
+        ->assertJsonPath('data.credit_limit', 150000);
+
+    $this->assertDatabaseHas('customers', [
+        'email' => $customer['email'],
+        'credit_limit' => 150000,
+    ]);
+});
+
+test('create customer without credit limit stores null', function () {
+    $customer = Customer::factory()->raw();
+
+    postJson('api/v1/customers', $customer)->assertOk();
+
+    $this->assertDatabaseHas('customers', [
+        'email' => $customer['email'],
+        'credit_limit' => null,
+    ]);
+});
+
+test('credit limit must be a non-negative integer', function () {
+    $customer = Customer::factory()->raw(['credit_limit' => -1]);
+
+    postJson('api/v1/customers', $customer)
+        ->assertStatus(422)
+        ->assertJsonValidationErrors(['credit_limit']);
+});
+
+test('update customer can clear credit limit', function () {
+    $customer = Customer::factory()->create(['credit_limit' => 1000]);
+
+    $payload = Customer::factory()->raw(['credit_limit' => null]);
+
+    putJson('api/v1/customers/'.$customer->id, $payload)->assertOk();
+
+    $this->assertDatabaseHas('customers', [
+        'id' => $customer->id,
+        'credit_limit' => null,
+    ]);
+});
+
 test('store validates using a form request', function () {
     $this->assertActionUsesFormRequest(
         CustomersController::class,

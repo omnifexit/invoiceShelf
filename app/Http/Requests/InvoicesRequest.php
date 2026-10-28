@@ -6,6 +6,7 @@ use App\Models\CompanySetting;
 use App\Models\Customer;
 use App\Models\Invoice;
 use App\Rules\DueDateNotBeforeInvoiceDate;
+use App\Rules\WithinCustomerCreditLimit;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -100,6 +101,10 @@ class InvoicesRequest extends FormRequest
                     'required',
                 ];
             }
+        }
+
+        if ($this->isMethod('POST')) {
+            $rules['total'][] = new WithinCustomerCreditLimit($this->input('customer_id'));
         }
 
         if ($this->isMethod('PUT')) {

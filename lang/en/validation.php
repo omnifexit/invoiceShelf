@@ -31,6 +31,7 @@ return [
     'confirmed' => 'The :attribute confirmation does not match.',
     'date' => 'The :attribute is not a valid date.',
     'due_date_before_invoice_date' => 'The due date cannot be before the invoice date.',
+    'credit_limit_exceeded' => 'This invoice exceeds the customer\'s credit limit: the outstanding amount plus the invoice total is higher than the credit limit.',
     'carbon_date_format' => 'The :attribute does not match the format :format.',
     'moment_date_format' => 'The :attribute does not match the format :format.',
     'different' => 'The :attribute and :other must be different.',

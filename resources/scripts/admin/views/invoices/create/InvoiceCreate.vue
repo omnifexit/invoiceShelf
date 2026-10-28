@@ -74,6 +74,13 @@
         :is-edit="isEdit"
       />
 
+      <BaseErrorAlert
+        v-if="creditLimitError"
+        class="mt-6"
+        :error-title="$t('invoices.credit_limit_exceeded')"
+        :errors="[creditLimitError]"
+      />
+
       <BaseScrollPane>
         <!-- Invoice Items -->
         <InvoiceItems
@@ -176,6 +183,7 @@ let router = useRouter()
 const invoiceValidationScope = 'newInvoice'
 let isSaving = ref(false)
 const isMarkAsDefault = ref(false)
+const creditLimitError = ref(null)
 
 const invoiceNoteFieldList = ref([
   'customer',
@@ -256,6 +264,8 @@ invoiceStore.fetchInvoiceInitialSettings(isEdit.value)
 watch(
   () => invoiceStore.newInvoice.customer,
   (newVal) => {
+    creditLimitError.value = null
+
     if (newVal && newVal.currency) {
       invoiceStore.newInvoice.selectedCurrency = newVal.currency
     } else {
@@ -300,6 +310,8 @@ async function submitForm() {
     data.tax_type_ids = data.taxes.map(_t => _t.tax_type_id)
   }
 
+  creditLimitError.value = null
+
   try {
     const action = isEdit.value
       ? invoiceStore.updateInvoice
@@ -309,6 +321,11 @@ async function submitForm() {
 
     router.push(`/admin/invoices/${response.data.data.id}/view`)
   } catch (err) {
+    const totalErrors = err?.response?.data?.errors?.total
+    if (err?.response?.status === 422 && totalErrors?.length) {
+      creditLimitError.value = totalErrors[0]
+    }
+
     console.error(err)
   }
 

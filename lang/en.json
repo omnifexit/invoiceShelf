@@ -192,6 +192,8 @@
     "title": "Customers",
     "prefix": "Prefix",
     "tax_id": "Tax ID",
+    "credit_limit": "Credit Limit",
+    "credit_limit_help": "Leave empty for no credit limit.",
     "add_customer": "Add Customer",
     "contacts_list": "Customer List",
     "name": "Name",
@@ -381,6 +383,7 @@
     "mark_as_default_estimate_template_description": "If enabled, the selected template will be automatically selected for new estimates."
   },
   "invoices": {
+    "credit_limit_exceeded": "Credit limit exceeded",
     "title": "Invoices",
     "download": "Download",
     "pay_invoice": "Pay Invoice",
@@ -1541,6 +1544,7 @@
     "quantity_maxlength": "Quantity should not be greater than 20 digits.",
     "price_maxlength": "Price should not be greater than 20 digits.",
     "price_minvalue": "Price should be greater than 0.",
+    "credit_limit_minvalue": "Credit limit cannot be negative.",
     "amount_maxlength": "Amount should not be greater than 20 digits.",
     "amount_minvalue": "Amount should be greater than 0.",
     "discount_maxlength": "Discount should not be greater than max discount",

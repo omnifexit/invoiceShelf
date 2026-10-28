@@ -52,6 +52,12 @@ class CustomerRequest extends FormRequest
             'tax_id' => [
                 'nullable',
             ],
+            'credit_limit' => [
+                'nullable',
+                'integer',
+                'min:0',
+                'max:999999999999',
+            ],
             'enable_portal' => [
                 'boolean',
             ],
@@ -136,6 +142,7 @@ class CustomerRequest extends FormRequest
                 'phone',
                 'prefix',
                 'tax_id',
+                'credit_limit',
                 'company_name',
                 'contact_name',
                 'website',
