@@ -27,6 +27,7 @@ const router = useRouter()
 
 const isMarkAsSent = ref(false)
 const isDuplicating = ref(false)
+const isExportingUbl = ref(false)
 const isLoading = ref(false)
 
 const invoiceList = ref(null)
@@ -122,6 +123,33 @@ async function onDuplicateInvoice() {
     // error notification is already shown by the store
   } finally {
     isDuplicating.value = false
+  }
+}
+
+async function onExportUbl() {
+  isExportingUbl.value = true
+
+  try {
+    const response = await invoiceStore.exportInvoiceUbl(invoiceData.value.id)
+
+    const disposition = response.headers['content-disposition'] || ''
+    const match = disposition.match(/filename="?([^";]+)"?/)
+    const fileName = match ? match[1] : `invoice-${invoiceData.value.id}.xml`
+
+    const url = window.URL.createObjectURL(
+      new Blob([response.data], { type: 'application/xml' })
+    )
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', fileName)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+  } catch (error) {
+    // error notification is already shown by the store
+  } finally {
+    isExportingUbl.value = false
   }
 }
 
@@ -294,6 +322,18 @@ onSearched = debounce(onSearched, 500)
             {{ $t('invoices.record_payment') }}
           </BaseButton>
         </router-link>
+
+        <!-- Export UBL -->
+        <BaseButton
+          v-if="userStore.hasAbilities(abilities.VIEW_INVOICE)"
+          variant="primary-outline"
+          class="ml-3 text-sm"
+          :disabled="isExportingUbl"
+          :loading="isExportingUbl"
+          @click="onExportUbl"
+        >
+          {{ $t('invoices.export_ubl') }}
+        </BaseButton>
 
         <!-- Duplicate Invoice -->
         <BaseButton
