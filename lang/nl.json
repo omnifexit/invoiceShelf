@@ -384,6 +384,7 @@
   },
   "invoices": {
     "credit_limit_exceeded": "Kredietlimiet overschreden",
+    "last_payment_reminder_sent": "Laatste betalingsherinnering verstuurd op {date}",
     "title": "Facturen",
     "download": "Downloaden",
     "pay_invoice": "Betaal factuur",
@@ -1638,6 +1639,8 @@
   "mail_viewed_estimate": ":name heeft deze offerte bekeken.",
   "mail_view_invoice": "Bekijk factuur",
   "mail_viewed_invoice": ":name heeft deze factuur bekeken.",
+  "mail_payment_reminder_subject": "Betalingsherinnering voor factuur {INVOICE_NUMBER}",
+  "mail_payment_reminder_body": "Beste klant,<br><br>Volgens onze administratie is factuur <b>{INVOICE_NUMBER}</b> van <b>{COMPANY_NAME}</b>, met vervaldatum {INVOICE_DUE_DATE}, nog niet volledig betaald. Wij verzoeken u het openstaande bedrag zo spoedig mogelijk te voldoen.<br><br>Heeft u al betaald, dan kunt u deze herinnering als niet verzonden beschouwen.",
   "mail_view_payment": "Bekijk betaling",
   "notification_view_estimate": "[Notification] Offerte bekeken",
   "notification_view_invoice": "[Notification] Factuur bekeken",

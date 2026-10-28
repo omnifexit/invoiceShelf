@@ -384,6 +384,7 @@
   },
   "invoices": {
     "credit_limit_exceeded": "Credit limit exceeded",
+    "last_payment_reminder_sent": "Last payment reminder sent on {date}",
     "title": "Invoices",
     "download": "Download",
     "pay_invoice": "Pay Invoice",
@@ -1639,6 +1640,8 @@
   "mail_viewed_estimate": ":name viewed this Estimate.",
   "mail_view_invoice": "View Invoice",
   "mail_viewed_invoice": ":name viewed this Invoice.",
+  "mail_payment_reminder_subject": "Payment reminder for invoice {INVOICE_NUMBER}",
+  "mail_payment_reminder_body": "Dear customer,<br><br>Our records show that invoice <b>{INVOICE_NUMBER}</b> from <b>{COMPANY_NAME}</b>, due on {INVOICE_DUE_DATE}, has not been paid in full yet. Please arrange payment at your earliest convenience.<br><br>If you have already paid, please disregard this reminder.",
   "mail_view_payment": "View Payment",
   "notification_view_estimate": "[Notification] Estimate viewed",
   "notification_view_invoice": "[Notification] Invoice viewed",
