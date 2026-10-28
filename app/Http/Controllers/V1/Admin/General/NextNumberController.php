@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\V1\Admin\General;
 
 use App\Http\Controllers\Controller;
+use App\Models\CreditNote;
 use App\Models\Estimate;
 use App\Models\Invoice;
 use App\Models\Payment;
@@ -43,6 +44,13 @@ class NextNumberController extends Controller
 
                 case 'payment':
                     $nextNumber = $serial->setModel($payment)
+                        ->setModelObject($request->model_id)
+                        ->getNextNumber();
+
+                    break;
+
+                case 'credit_note':
+                    $nextNumber = $serial->setModel(new CreditNote)
                         ->setModelObject($request->model_id)
                         ->getNextNumber();
 
