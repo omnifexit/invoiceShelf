@@ -5,6 +5,7 @@
     "items": "Items",
     "invoices": "Invoices",
     "recurring-invoices": "Recurring Invoices",
+    "credit_notes": "Credit Notes",
     "expenses": "Expenses",
     "estimates": "Estimates",
     "payments": "Payments",
@@ -530,7 +531,8 @@
         "gemini_request_failed": "Gemini could not process the request. Try again later.",
         "gemini_invalid_response": "Gemini returned an answer that could not be read. Rephrase and try again."
       }
-    }
+    },
+    "credit": "Credit"
   },
   "recurring_invoices": {
     "title": "Recurring Invoices",
@@ -696,6 +698,37 @@
     "deleted_message": "Payment deleted successfully | Payments deleted successfully",
     "invalid_amount_message": "Payment amount is invalid",
     "amount_due": "Due Amount"
+  },
+  "credit_notes": {
+    "title": "Credit Notes",
+    "credit_note": "Credit Note | Credit Notes",
+    "credit_note_number": "Credit Note Number",
+    "credit_note_date": "Credit Note Date",
+    "amount": "Amount",
+    "tax": "Tax part",
+    "reason": "Reason",
+    "invoice": "Invoice",
+    "customer": "Customer",
+    "new_credit_note": "New Credit Note",
+    "create_credit_note": "Create Credit Note",
+    "credit_invoice": "Credit Invoice {number}",
+    "max_creditable": "Amount (max. {amount})",
+    "no_credit_notes": "No credit notes yet!",
+    "list_of_credit_notes": "This section will contain the list of credit notes. Credit an invoice from its detail page.",
+    "created_message": "Credit note created successfully",
+    "deleted_message": "Credit Note deleted successfully | Credit Notes deleted successfully",
+    "confirm_delete": "The credited amount will be added back to the amount due of the invoice. | The credited amounts will be added back to the amount due of the invoices.",
+    "view_pdf": "View PDF",
+    "select_a_credit_note": "Select a credit note",
+    "credited_amount": "Credited Amount",
+    "remaining_due": "Amount Due",
+    "invoice_total": "Invoice Total",
+    "invoice_fully_credited": "This invoice has no amount left to credit.",
+    "amount_exceeds_creditable": "The amount may not exceed the amount due of the invoice.",
+    "amount_must_be_positive": "The amount must be greater than zero.",
+    "credit_note_details": "Credit Note Details",
+    "download_pdf": "Download PDF",
+    "no_matching_credit_notes": "There are no matching credit notes!"
   },
   "bank_transactions": {
     "title": "Bank import",
@@ -1187,6 +1220,13 @@
         "payment_email_attachment_setting_description": "Enable this if you want to send the payment receipts as an email attachment. Please note that 'View Payment' button in emails will not be displayed anymore when enabled.",
         "payment_settings_updated": "Payment Settings updated successfully"
       },
+      "credit_notes": {
+        "title": "Credit Notes",
+        "credit_note_number_format": "Credit Note Number Format",
+        "credit_note_number_format_description": "Customize how your credit note number gets generated automatically when you credit an invoice.",
+        "preview_credit_note_number": "Preview Credit Note Number",
+        "credit_note_settings_updated": "Credit Note Settings updated successfully"
+      },
       "items": {
         "title": "Items",
         "units": "Units",
@@ -1396,7 +1436,7 @@
       "title": "Update App",
       "description": "You can easily update InvoiceShelf by checking for a new update by clicking the button below",
       "check_update": "Check for updates",
-      "insider_consent" : "Opt-in for Insider releases. Recommended for testing purposes only.",
+      "insider_consent": "Opt-in for Insider releases. Recommended for testing purposes only.",
       "avail_update": "New Update available",
       "next_version": "Next version",
       "requirements": "Requirements",
@@ -1584,9 +1624,9 @@
       "failed": "Domain verification failed. Please enter valid domain name.",
       "verify_and_continue": "Verify And Continue",
       "notes": {
-        "notes" : "Notes:",
-        "not_contain" : "App domain should not contain",
-        "or" : "or",
+        "notes": "Notes:",
+        "not_contain": "App domain should not contain",
+        "or": "or",
         "in_front": "in front of the domain.",
         "if_you": "If you're accessing the website on a different port, please mention the port. For example:"
       }
@@ -1755,5 +1795,14 @@
   "mail_view_payment": "View Payment",
   "notification_view_estimate": "[Notification] Estimate viewed",
   "notification_view_invoice": "[Notification] Invoice viewed",
-  "You have received a new invoice from <b>{COMPANY_NAME}</b>.</br> Please download using the button below:": "You have received a new invoice from <b>{COMPANY_NAME}</b>.</br> Please download using the button below:"
+  "You have received a new invoice from <b>{COMPANY_NAME}</b>.</br> Please download using the button below:": "You have received a new invoice from <b>{COMPANY_NAME}</b>.</br> Please download using the button below:",
+  "pdf_credit_note_label": "CREDIT NOTE",
+  "pdf_credit_note_date": "Credit Note Date",
+  "pdf_credit_note_number": "Credit Note Number",
+  "pdf_credit_note_invoice_reference": "Credit for invoice",
+  "pdf_credit_note_amount_label": "Amount Credited",
+  "pdf_credit_note_tax_label": "Of which tax",
+  "pdf_total_credited_label": "TOTAL CREDITED",
+  "pdf_credited_tax_label": "CREDITED TAX",
+  "pdf_net_tax_label": "NET TAX"
 }
