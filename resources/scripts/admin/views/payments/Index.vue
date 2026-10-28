@@ -27,6 +27,19 @@
 
         <BaseButton
           v-if="userStore.hasAbilities(abilities.CREATE_PAYMENT)"
+          variant="primary-outline"
+          class="ml-4"
+          @click="$router.push('/admin/bank-transactions')"
+        >
+          <template #left="slotProps">
+            <BaseIcon name="UploadIcon" :class="slotProps.class" />
+          </template>
+
+          {{ $t('bank_transactions.import_bank_statement') }}
+        </BaseButton>
+
+        <BaseButton
+          v-if="userStore.hasAbilities(abilities.CREATE_PAYMENT)"
           variant="primary"
           class="ml-4"
           @click="$router.push('/admin/payments/create')"
