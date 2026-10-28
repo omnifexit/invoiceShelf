@@ -206,6 +206,21 @@ const rules = {
   invoice_date: {
     required: helpers.withMessage(t('validation.required'), required),
   },
+  due_date: {
+    notBeforeInvoiceDate: helpers.withMessage(
+      t('validation.due_date_before_invoice_date'),
+      function (value) {
+        const invoiceDate = invoiceStore.newInvoice.invoice_date
+        if (!value || !invoiceDate) {
+          return true
+        }
+        return (
+          String(value).substring(0, 10) >=
+          String(invoiceDate).substring(0, 10)
+        )
+      }
+    ),
+  },
   reference_number: {
     maxLength: helpers.withMessage(
       t('validation.price_maxlength'),
