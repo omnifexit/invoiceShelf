@@ -520,3 +520,94 @@ test('update invoice with EUR currency', function () {
         'base_amount' => $invoice2['taxes'][0]['base_amount'],
     ]);
 });
+
+function rawInvoiceWithDates(?string $invoiceDate, ?string $dueDate): array
+{
+    return Invoice::factory()->raw([
+        'invoice_date' => $invoiceDate,
+        'due_date' => $dueDate,
+        'taxes' => [Tax::factory()->raw()],
+        'items' => [InvoiceItem::factory()->raw()],
+    ]);
+}
+
+test('create invoice fails when due date is before invoice date', function () {
+    $invoice = rawInvoiceWithDates('2026-10-28', '2026-10-27');
+
+    postJson('api/v1/invoices', $invoice)
+        ->assertStatus(422)
+        ->assertJsonValidationErrors(['due_date' => 'The due date cannot be before the invoice date.']);
+
+    $this->assertDatabaseMissing('invoices', [
+        'invoice_number' => $invoice['invoice_number'],
+    ]);
+});
+
+test('create invoice succeeds when due date equals invoice date', function () {
+    $invoice = rawInvoiceWithDates('2026-10-28', '2026-10-28');
+
+    postJson('api/v1/invoices', $invoice)->assertOk();
+
+    $this->assertDatabaseHas('invoices', [
+        'invoice_number' => $invoice['invoice_number'],
+    ]);
+});
+
+test('create invoice succeeds without due date', function () {
+    $invoice = rawInvoiceWithDates('2026-10-28', null);
+
+    postJson('api/v1/invoices', $invoice)->assertOk();
+
+    $this->assertDatabaseHas('invoices', [
+        'invoice_number' => $invoice['invoice_number'],
+    ]);
+});
+
+test('create invoice succeeds when due date equals invoice date with time', function () {
+    $invoice = rawInvoiceWithDates('2026-10-28 14:30', '2026-10-28');
+
+    postJson('api/v1/invoices', $invoice)->assertOk();
+});
+
+test('create invoice succeeds when due date is after invoice date', function () {
+    $invoice = rawInvoiceWithDates('2026-10-28', '2026-11-27');
+
+    postJson('api/v1/invoices', $invoice)->assertOk();
+});
+
+test('create invoice fails when due date is not a valid date', function () {
+    $invoice = rawInvoiceWithDates('2026-10-28', 'not-a-date');
+
+    postJson('api/v1/invoices', $invoice)
+        ->assertStatus(422)
+        ->assertJsonValidationErrors(['due_date']);
+});
+
+test('update invoice fails when due date is before invoice date', function () {
+    $invoice = Invoice::factory()->create([
+        'invoice_date' => '1988-07-18',
+        'due_date' => '1988-08-18',
+    ]);
+
+    $invoice2 = rawInvoiceWithDates('2026-10-28', '2026-10-01');
+
+    putJson('api/v1/invoices/'.$invoice->id, $invoice2)
+        ->assertStatus(422)
+        ->assertJsonValidationErrors(['due_date' => 'The due date cannot be before the invoice date.']);
+});
+
+test('update invoice succeeds when due date equals invoice date', function () {
+    $invoice = Invoice::factory()->create([
+        'invoice_date' => '1988-07-18',
+        'due_date' => '1988-08-18',
+    ]);
+
+    $invoice2 = rawInvoiceWithDates('2026-10-28', '2026-10-28');
+
+    putJson('api/v1/invoices/'.$invoice->id, $invoice2)->assertOk();
+
+    $this->assertDatabaseHas('invoices', [
+        'id' => $invoice->id,
+        'invoice_number' => $invoice2['invoice_number'],
+    ]);
+});
