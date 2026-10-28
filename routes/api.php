@@ -5,6 +5,10 @@ use App\Http\Controllers\V1\Admin\Auth\ForgotPasswordController;
 use App\Http\Controllers\V1\Admin\Auth\ResetPasswordController;
 use App\Http\Controllers\V1\Admin\Backup\BackupsController;
 use App\Http\Controllers\V1\Admin\Backup\DownloadBackupController;
+use App\Http\Controllers\V1\Admin\BankStatement\BankTransactionsController;
+use App\Http\Controllers\V1\Admin\BankStatement\IgnoreBankTransactionController;
+use App\Http\Controllers\V1\Admin\BankStatement\ImportBankStatementController;
+use App\Http\Controllers\V1\Admin\BankStatement\LinkBankTransactionController;
 use App\Http\Controllers\V1\Admin\Company\CompaniesController;
 use App\Http\Controllers\V1\Admin\Company\CompanyController as AdminCompanyController;
 use App\Http\Controllers\V1\Admin\Customer\CustomersController;
@@ -336,6 +340,17 @@ Route::prefix('/v1')->group(function () {
             Route::apiResource('payments', PaymentsController::class);
 
             Route::apiResource('payment-methods', PaymentMethodsController::class);
+
+            // Bank statements
+            // ----------------------------------
+
+            Route::post('/bank-statements/import', ImportBankStatementController::class)->middleware('throttle:20,1');
+
+            Route::get('/bank-transactions', [BankTransactionsController::class, 'index']);
+
+            Route::post('/bank-transactions/{bankTransaction}/link', LinkBankTransactionController::class);
+
+            Route::post('/bank-transactions/{bankTransaction}/ignore', IgnoreBankTransactionController::class);
 
             // Custom fields
             // ----------------------------------

@@ -79,6 +79,8 @@ const EstimateView = () => import('@/scripts/admin/views/estimates/View.vue')
 const PaymentsIndex = () => import('@/scripts/admin/views/payments/Index.vue')
 const PaymentCreate = () => import('@/scripts/admin/views/payments/Create.vue')
 const PaymentView = () => import('@/scripts/admin/views/payments/View.vue')
+const BankTransactionsIndex = () =>
+  import('@/scripts/admin/views/bank-transactions/Index.vue')
 
 const NotFoundPage = () => import('@/scripts/admin/views/errors/404.vue')
 
@@ -224,6 +226,12 @@ export default [
         name: 'payments.view',
         meta: { ability: abilities.VIEW_PAYMENT },
         component: PaymentView,
+      },
+      {
+        path: 'bank-transactions',
+        name: 'bank-transactions.index',
+        meta: { ability: abilities.CREATE_PAYMENT },
+        component: BankTransactionsIndex,
       },
 
       //settings

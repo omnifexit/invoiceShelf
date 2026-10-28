@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Support\Str;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Vinkla\Hashids\Facades\Hashids;
@@ -92,6 +93,11 @@ class Payment extends Model implements HasMedia
     public function transaction(): BelongsTo
     {
         return $this->belongsTo(Transaction::class);
+    }
+
+    public function bankTransaction(): BelongsTo
+    {
+        return $this->belongsTo(BankTransaction::class);
     }
 
     public function emailLogs(): MorphMany
@@ -191,6 +197,56 @@ class Payment extends Model implements HasMedia
             'paymentMethod',
             'fields',
         ])->find($payment->id);
+
+        return $payment;
+    }
+
+    /**
+     * Record a payment received through an imported bank transaction. Without
+     * an invoice the amount is recorded as credit for the customer.
+     */
+    public static function createFromBankTransaction(
+        BankTransaction $transaction,
+        Customer $customer,
+        ?Invoice $invoice,
+        int $amount,
+        User $creator,
+        ?float $exchangeRate = null
+    ): self {
+        $serial = (new SerialNumberFormatter)
+            ->setModel(new Payment)
+            ->setCompany($transaction->company_id)
+            ->setCustomer($customer->id)
+            ->setNextNumbers();
+
+        $exchangeRate = $invoice ? ((float) $invoice->exchange_rate ?: 1.0) : ($exchangeRate ?: 1.0);
+
+        $invoice?->subtractInvoicePayment($amount);
+
+        $payment = Payment::create([
+            'company_id' => $transaction->company_id,
+            'customer_id' => $customer->id,
+            'invoice_id' => $invoice?->id,
+            'bank_transaction_id' => $transaction->id,
+            'payment_number' => $serial->getNextNumber(),
+            'payment_date' => $transaction->booking_date->format('Y-m-d'),
+            'amount' => $amount,
+            'base_amount' => (int) round($amount * $exchangeRate),
+            'exchange_rate' => $exchangeRate,
+            'currency_id' => $invoice ? $invoice->currency_id : $customer->currency_id,
+            'creator_id' => $creator->id,
+            'payment_method_id' => PaymentMethod::whereCompanyId($transaction->company_id)->where('name', 'Bank Transfer')->value('id'),
+            'notes' => Str::limit('Bank: '.$transaction->counterparty_name.' - '.$transaction->description, 250),
+        ]);
+
+        $payment->unique_hash = Hashids::connection(Payment::class)->encode($payment->id);
+        $payment->sequence_number = $serial->nextSequenceNumber;
+        $payment->customer_sequence_number = $serial->nextCustomerSequenceNumber;
+        $payment->save();
+
+        if ((string) $payment->currency_id !== (string) CompanySetting::getSetting('currency', $payment->company_id)) {
+            ExchangeRateLog::addExchangeRateLog($payment);
+        }
 
         return $payment;
     }

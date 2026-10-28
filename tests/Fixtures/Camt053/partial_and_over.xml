@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:camt.053.001.02" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <BkToCstmrStmt>
+    <GrpHdr>
+      <MsgId>STMT-2026-302-MSG</MsgId>
+      <CreDtTm>2026-10-28T06:00:00</CreDtTm>
+    </GrpHdr>
+    <Stmt>
+      <Id>STMT-2026-302</Id>
+      <CreDtTm>2026-10-28T06:00:00</CreDtTm>
+      <Acct>
+        <Id><IBAN>NL91ABNA0417164300</IBAN></Id>
+        <Ccy>EUR</Ccy>
+      </Acct>
+      <Ntry>
+        <Amt Ccy="EUR">50.00</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <Sts>BOOK</Sts>
+        <BookgDt><Dt>2026-10-27</Dt></BookgDt>
+        <ValDt><Dt>2026-10-27</Dt></ValDt>
+        <AcctSvcrRef>ABN-0010</AcctSvcrRef>
+        <BkTxCd><Prtry><Cd>N544</Cd><Issr>ABNAMRO</Issr></Prtry></BkTxCd>
+        <NtryDtls>
+          <TxDtls>
+            <Refs><EndToEndId>NOTPROVIDED</EndToEndId></Refs>
+            <RltdPties>
+              <Dbtr><Nm>Jansen BV</Nm></Dbtr><DbtrAcct><Id><IBAN>NL20INGB0001234567</IBAN></Id></DbtrAcct>
+            </RltdPties>
+            <RmtInf><Ustrd>INV-BANK-0010 deel 1</Ustrd></RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">150.00</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <Sts>BOOK</Sts>
+        <BookgDt><Dt>2026-10-27</Dt></BookgDt>
+        <ValDt><Dt>2026-10-27</Dt></ValDt>
+        <AcctSvcrRef>ABN-0011</AcctSvcrRef>
+        <BkTxCd><Prtry><Cd>N544</Cd><Issr>ABNAMRO</Issr></Prtry></BkTxCd>
+        <NtryDtls>
+          <TxDtls>
+            <Refs><EndToEndId>NOTPROVIDED</EndToEndId></Refs>
+            <RltdPties>
+              <Dbtr><Nm>Jansen BV</Nm></Dbtr><DbtrAcct><Id><IBAN>NL20INGB0001234567</IBAN></Id></DbtrAcct>
+            </RltdPties>
+            <RmtInf><Ustrd>INV-BANK-0011</Ustrd></RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+    </Stmt>
+  </BkToCstmrStmt>
+</Document>
