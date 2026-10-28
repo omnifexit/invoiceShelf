@@ -394,6 +394,7 @@
     "unpaid": "Unpaid",
     "viewed": "Viewed",
     "overdue": "Overdue",
+    "show_only_overdue": "Only overdue invoices",
     "completed": "Completed",
     "customer": "CUSTOMER",
     "paid_status": "PAID STATUS",

@@ -92,6 +92,14 @@
           </template>
         </BaseInput>
       </BaseInputGroup>
+
+      <BaseInputGroup :label="$t('invoices.overdue')">
+        <BaseCheckbox
+          v-model="filters.overdue"
+          :label="$t('invoices.show_only_overdue')"
+          variant="primary"
+        />
+      </BaseInputGroup>
     </BaseFilterWrapper>
 
     <BaseEmptyPlaceholder
@@ -323,6 +331,7 @@ let filters = reactive({
   from_date: '',
   to_date: '',
   invoice_number: '',
+  overdue: false,
 })
 
 const showEmptyScreen = computed(
@@ -413,6 +422,7 @@ async function fetchData({ page, filter, sort }) {
     from_date: filters.from_date,
     to_date: filters.to_date,
     invoice_number: filters.invoice_number,
+    overdue: filters.overdue ? 1 : '',
     orderByField: sort.fieldName || 'created_at',
     orderBy: sort.order || 'desc',
     page,
@@ -480,6 +490,7 @@ function clearFilter() {
   filters.from_date = ''
   filters.to_date = ''
   filters.invoice_number = ''
+  filters.overdue = false
 
   activeTab.value = t('general.all')
 }
