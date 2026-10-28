@@ -235,6 +235,12 @@ class CreditNote extends Model
             $creditNote->unique_hash = Hashids::connection(CreditNote::class)->encode($creditNote->id);
             $creditNote->save();
 
+            // A credited invoice has been issued; without this flag the status
+            // would fall back to draft when it is recalculated.
+            if (! $invoice->sent && ! $invoice->viewed) {
+                $invoice->sent = true;
+            }
+
             $invoice->subtractInvoicePayment($creditNote->amount);
 
             if ((string) $creditNote->currency_id !== (string) CompanySetting::getSetting('currency', $creditNote->company_id)) {
