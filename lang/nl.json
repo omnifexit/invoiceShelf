@@ -1511,6 +1511,7 @@
     }
   },
   "validation": {
+    "due_date_before_invoice_date": "De vervaldatum mag niet vóór de factuurdatum liggen",
     "invalid_phone": "Ongeldig Telefoonnummer",
     "invalid_url": "Ongeldige URL (bijvoorbeeld: http://www.invoiceshelf.com))",
     "invalid_domain_url": "Ongeldige URL (bijvoorbeeld: invoiceshelf.com))",

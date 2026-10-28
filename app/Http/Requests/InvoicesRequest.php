@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Models\CompanySetting;
 use App\Models\Customer;
 use App\Models\Invoice;
+use App\Rules\DueDateNotBeforeInvoiceDate;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -29,6 +30,8 @@ class InvoicesRequest extends FormRequest
             ],
             'due_date' => [
                 'nullable',
+                'date',
+                new DueDateNotBeforeInvoiceDate($this->input('invoice_date')),
             ],
             'customer_id' => [
                 'required',

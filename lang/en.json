@@ -1511,6 +1511,7 @@
     }
   },
   "validation": {
+    "due_date_before_invoice_date": "Due date cannot be before the invoice date",
     "invalid_phone": "Invalid Phone Number",
     "invalid_url": "Invalid url (ex: http://www.invoiceshelf.com)",
     "invalid_domain_url": "Invalid url (ex: invoiceshelf.com)",

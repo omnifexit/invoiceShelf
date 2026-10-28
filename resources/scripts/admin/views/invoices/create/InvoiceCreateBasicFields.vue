@@ -22,18 +22,21 @@
           calendar-button-icon="calendar"
           :enableTime="enableTime"
           :time24hr="time24h"
+          @update:modelValue="v.due_date.$touch()"
         />
       </BaseInputGroup>
 
       <BaseInputGroup
         :label="$t('invoices.due_date')"
         :content-loading="isLoading"
+        :error="v.due_date.$error && v.due_date.$errors[0].$message"
       >
         <BaseDatePicker
           v-model="invoiceStore.newInvoice.due_date"
           :content-loading="isLoading"
           :calendar-button="true"
           calendar-button-icon="calendar"
+          @update:modelValue="v.due_date.$touch()"
         />
       </BaseInputGroup>
 
