@@ -1,8 +1,13 @@
 <?php
 
+use App\Providers\AppServiceProvider;
+use App\Providers\DropboxServiceProvider;
+use App\Providers\RouteServiceProvider;
+use App\Providers\ViewServiceProvider;
+
 return [
-    App\Providers\AppServiceProvider::class,
-    App\Providers\RouteServiceProvider::class,
-    App\Providers\DropboxServiceProvider::class,
-    App\Providers\ViewServiceProvider::class,
+    AppServiceProvider::class,
+    RouteServiceProvider::class,
+    DropboxServiceProvider::class,
+    ViewServiceProvider::class,
 ];

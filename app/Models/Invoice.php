@@ -84,7 +84,7 @@ class Invoice extends Model implements HasMedia
 
     public function items(): HasMany
     {
-        return $this->hasMany(\App\Models\InvoiceItem::class);
+        return $this->hasMany(InvoiceItem::class);
     }
 
     public function taxes(): HasMany

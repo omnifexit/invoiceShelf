@@ -8,6 +8,7 @@ use App\Models\CompanySetting;
 use App\Models\Estimate;
 use App\Services\SerialNumberFormatter;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Vinkla\Hashids\Facades\Hashids;
 
@@ -16,7 +17,7 @@ class CloneEstimateController extends Controller
     /**
      * Mail a specific invoice to the corresponding customer's email address.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function __invoke(Request $request, Estimate $estimate)
     {

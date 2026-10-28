@@ -144,5 +144,7 @@ class MailEnvironmentRequest extends FormRequest
 
                 break;
         }
+
+        return [];
     }
 }

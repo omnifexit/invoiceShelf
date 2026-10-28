@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\User;
+
 return [
 
     'mailgun' => [
@@ -17,7 +19,7 @@ return [
     ],
 
     'stripe' => [
-        'model' => \App\Models\User::class,
+        'model' => User::class,
         'key' => env('STRIPE_KEY'),
         'secret' => env('STRIPE_SECRET'),
         'webhook' => [

@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Customer;
+
 return [
 
     'guards' => [
@@ -19,7 +21,7 @@ return [
     'providers' => [
         'customers' => [
             'driver' => 'eloquent',
-            'model' => \App\Models\Customer::class,
+            'model' => Customer::class,
         ],
     ],
 

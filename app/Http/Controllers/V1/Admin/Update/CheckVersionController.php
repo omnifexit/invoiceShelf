@@ -5,6 +5,7 @@ namespace App\Http\Controllers\V1\Admin\Update;
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
 use App\Space\Updater;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CheckVersionController extends Controller
@@ -12,7 +13,7 @@ class CheckVersionController extends Controller
     /**
      * Handle the incoming request.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function __invoke(Request $request)
     {

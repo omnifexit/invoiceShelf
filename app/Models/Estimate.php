@@ -79,7 +79,7 @@ class Estimate extends Model implements HasMedia
 
     public function items(): HasMany
     {
-        return $this->hasMany(\App\Models\EstimateItem::class);
+        return $this->hasMany(EstimateItem::class);
     }
 
     public function customer(): BelongsTo
@@ -89,12 +89,12 @@ class Estimate extends Model implements HasMedia
 
     public function creator(): BelongsTo
     {
-        return $this->belongsTo(\App\Models\User::class, 'creator_id');
+        return $this->belongsTo(User::class, 'creator_id');
     }
 
     public function company(): BelongsTo
     {
-        return $this->belongsTo(\App\Models\Company::class);
+        return $this->belongsTo(Company::class);
     }
 
     public function currency(): BelongsTo
