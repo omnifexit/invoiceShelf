@@ -17,6 +17,9 @@ if (InstallUtils::isDbCreated()) {
     Schedule::command('check:invoices:status')
         ->daily();
 
+    Schedule::command('send:payment-reminders')
+        ->daily();
+
     Schedule::command('check:estimates:status')
         ->daily();
 

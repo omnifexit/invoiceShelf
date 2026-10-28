@@ -56,6 +56,8 @@ class InvoiceResource extends JsonResource
             'sales_tax_type' => $this->sales_tax_type,
             'sales_tax_address_type' => $this->sales_tax_address_type,
             'overdue' => $this->overdue,
+            'last_payment_reminder_at' => $this->resource->latestPaymentReminder?->sent_at,
+            'formatted_last_payment_reminder_at' => $this->resource->formatted_last_payment_reminder_at,
             'items' => $this->when($this->items()->exists(), function () {
                 return InvoiceItemResource::collection($this->items);
             }),

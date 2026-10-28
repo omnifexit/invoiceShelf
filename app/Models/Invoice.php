@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Nwidart\Modules\Facades\Module;
 use Spatie\MediaLibrary\HasMedia;
@@ -40,6 +41,8 @@ class Invoice extends Model implements HasMedia
     public const STATUS_PARTIALLY_PAID = 'PARTIALLY_PAID';
 
     public const STATUS_PAID = 'PAID';
+
+    public const PAYMENT_REMINDER_INTERVAL_DAYS = 7;
 
     protected $dates = [
         'created_at',
@@ -95,6 +98,22 @@ class Invoice extends Model implements HasMedia
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);
+    }
+
+    /**
+     * @return HasMany<PaymentReminder, $this>
+     */
+    public function paymentReminders(): HasMany
+    {
+        return $this->hasMany(PaymentReminder::class);
+    }
+
+    /**
+     * @return HasOne<PaymentReminder, $this>
+     */
+    public function latestPaymentReminder(): HasOne
+    {
+        return $this->hasOne(PaymentReminder::class)->latestOfMany('sent_at');
     }
 
     public function currency(): BelongsTo
@@ -190,6 +209,19 @@ class Invoice extends Model implements HasMedia
         return Carbon::parse($this->due_date)->translatedFormat($dateFormat);
     }
 
+    public function getFormattedLastPaymentReminderAtAttribute($value)
+    {
+        $reminder = $this->latestPaymentReminder;
+
+        if (! $reminder) {
+            return null;
+        }
+
+        $dateFormat = CompanySetting::getSetting('carbon_date_format', $this->company_id);
+
+        return Carbon::parse($reminder->sent_at)->translatedFormat($dateFormat);
+    }
+
     public function getFormattedInvoiceDateAttribute($value)
     {
         $dateFormat = CompanySetting::getSetting('carbon_date_format', $this->company_id);
@@ -224,6 +256,24 @@ class Invoice extends Model implements HasMedia
     public function scopeWhereOverdue($query)
     {
         return $query->where('invoices.overdue', true);
+    }
+
+    public function scopeDueForPaymentReminder($query, ?Carbon $now = null)
+    {
+        $now ??= Carbon::now();
+        $lastAllowedDate = $now->copy()->subDays(self::PAYMENT_REMINDER_INTERVAL_DAYS)->toDateString();
+
+        return $query->whereNotIn('invoices.status', [self::STATUS_DRAFT, self::STATUS_COMPLETED])
+            ->whereIn('invoices.paid_status', [self::STATUS_UNPAID, self::STATUS_PARTIALLY_PAID])
+            ->where('invoices.due_amount', '>', 0)
+            ->whereNotNull('invoices.due_date')
+            ->whereDate('invoices.due_date', '<', $now->toDateString())
+            ->whereHas('customer', function ($query) {
+                $query->whereNotNull('email')->where('email', '!=', '');
+            })
+            ->whereDoesntHave('paymentReminders', function ($query) use ($lastAllowedDate) {
+                $query->whereDate('sent_at', '>', $lastAllowedDate);
+            });
     }
 
     public function scopeWhereInvoiceNumber($query, $invoiceNumber)
@@ -483,6 +533,33 @@ class Invoice extends Model implements HasMedia
             'success' => true,
             'type' => 'send',
         ];
+    }
+
+    public function sendPaymentReminder(): PaymentReminder
+    {
+        $locale = CompanySetting::getSetting('language', $this->company_id) ?: config('app.locale');
+        $previousLocale = App::getLocale();
+        App::setLocale($locale);
+
+        try {
+            $data = $this->sendInvoiceData([
+                'from' => config('mail.from.address'),
+                'to' => $this->customer->getAttribute('email'),
+                'subject' => __('mail_payment_reminder_subject'),
+                'body' => __('mail_payment_reminder_body'),
+            ]);
+
+            \Mail::to($data['to'])->send(new SendInvoiceMail($data));
+        } finally {
+            App::setLocale($previousLocale);
+        }
+
+        return $this->paymentReminders()->create([
+            'company_id' => $this->company_id,
+            'customer_id' => $this->customer_id,
+            'email' => $data['to'],
+            'sent_at' => Carbon::now(),
+        ]);
     }
 
     public static function createItems($invoice, $invoiceItems)
