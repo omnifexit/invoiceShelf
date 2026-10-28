@@ -428,6 +428,67 @@ export const useInvoiceStore = (useWindow = false) => {
         })
       },
 
+      parseInvoiceText(text) {
+        return new Promise((resolve, reject) => {
+          axios
+            .post('/api/v1/invoices/parse-text', { text })
+            .then((response) => {
+              resolve(response)
+            })
+            .catch((err) => {
+              const error = err.response?.data?.error
+
+              if (
+                typeof error === 'string' &&
+                error.startsWith('invoices.ai.errors.')
+              ) {
+                notificationStore.showNotification({
+                  type: 'error',
+                  message: global.t(error),
+                })
+              } else {
+                handleError(err)
+              }
+              reject(err)
+            })
+        })
+      },
+
+      async applyInvoiceDraft(draft) {
+        const companyStore = useCompanyStore()
+
+        if (draft.customer.status === 'matched') {
+          await this.selectCustomer(draft.customer.id)
+        }
+
+        if (draft.invoice_date) {
+          let invoiceDate = draft.invoice_date
+          if (companyStore.selectedCompanySettings.invoice_use_time === 'YES') {
+            invoiceDate += ' ' + moment().format('HH:mm')
+          }
+          this.newInvoice.invoice_date = invoiceDate
+        }
+
+        if (draft.due_date) {
+          this.newInvoice.due_date = draft.due_date
+        }
+
+        if (draft.items.length) {
+          this.newInvoice.items = draft.items.map((item) => ({
+            ...invoiceItemStub,
+            id: Guid.raw(),
+            item_id: item.item_id,
+            name: item.name,
+            description: item.description,
+            quantity: item.quantity,
+            price: item.price,
+            unit_name: item.unit_name,
+            total: Math.round(item.price * item.quantity),
+            taxes: [{ ...taxStub, id: Guid.raw() }],
+          }))
+        }
+      },
+
       fetchInvoiceTemplates(params) {
         return new Promise((resolve, reject) => {
           axios
