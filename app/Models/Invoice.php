@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use App;
+use App\Exceptions\UblExportException;
 use App\Mail\SendInvoiceMail;
 use App\Services\GeminiInvoiceParser;
 use App\Services\SerialNumberFormatter;
+use App\Services\UblInvoiceGenerator;
 use App\Space\PdfTemplateUtils;
 use App\Traits\GeneratesPdfTrait;
 use App\Traits\HasCustomFieldsTrait;
@@ -777,6 +779,21 @@ class Invoice extends Model implements HasMedia
                 $invoice->taxes()->create($tax);
             }
         }
+    }
+
+    /**
+     * Render the invoice as a UBL 2.1 document (EN 16931 / Peppol BIS Billing 3.0).
+     *
+     * @throws UblExportException when required data is missing
+     */
+    public function toUbl(): string
+    {
+        return app(UblInvoiceGenerator::class)->generate($this);
+    }
+
+    public function getUblFileName(): string
+    {
+        return 'invoice-'.(preg_replace('/[^A-Za-z0-9_-]+/', '-', (string) $this->invoice_number) ?: $this->id).'.xml';
     }
 
     public function getPDFData()
