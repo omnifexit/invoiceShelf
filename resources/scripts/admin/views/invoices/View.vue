@@ -530,6 +530,17 @@ onSearched = debounce(onSearched, 500)
       </div>
     </div>
 
+    <p
+      v-if="invoiceData?.formatted_last_payment_reminder_at"
+      class="mt-6 text-sm text-gray-600"
+    >
+      {{
+        $t('invoices.last_payment_reminder_sent', {
+          date: invoiceData.formatted_last_payment_reminder_at,
+        })
+      }}
+    </p>
+
     <div
       class="flex flex-col min-h-0 mt-8 overflow-hidden"
       style="height: 75vh"
