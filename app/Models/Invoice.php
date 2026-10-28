@@ -221,6 +221,11 @@ class Invoice extends Model implements HasMedia
         ]);
     }
 
+    public function scopeWhereOverdue($query)
+    {
+        return $query->where('invoices.overdue', true);
+    }
+
     public function scopeWhereInvoiceNumber($query, $invoiceNumber)
     {
         return $query->where('invoices.invoice_number', 'LIKE', '%'.$invoiceNumber.'%');
@@ -264,6 +269,8 @@ class Invoice extends Model implements HasMedia
             };
         })->when($filters['paid_status'] ?? null, function ($query, $paidStatus) {
             $query->wherePaidStatus($paidStatus);
+        })->when(filter_var($filters['overdue'] ?? false, FILTER_VALIDATE_BOOLEAN), function ($query) {
+            $query->whereOverdue();
         })->when($filters['invoice_id'] ?? null, function ($query, $invoiceId) {
             $query->whereInvoice($invoiceId);
         })->when($filters['invoice_number'] ?? null, function ($query, $invoiceNumber) {

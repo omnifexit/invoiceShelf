@@ -611,3 +611,74 @@ test('update invoice succeeds when due date equals invoice date', function () {
         'invoice_number' => $invoice2['invoice_number'],
     ]);
 });
+
+test('filter invoices by overdue only returns overdue invoices', function () {
+    $overdueOne = Invoice::factory()->create([
+        'invoice_date' => '1988-07-18',
+        'due_date' => '1988-08-18',
+        'overdue' => true,
+    ]);
+    $overdueTwo = Invoice::factory()->create([
+        'invoice_date' => '1988-07-18',
+        'due_date' => '1988-08-18',
+        'overdue' => true,
+    ]);
+    $notOverdue = Invoice::factory()->create([
+        'invoice_date' => '1988-07-18',
+        'due_date' => '1988-08-18',
+        'overdue' => false,
+    ]);
+
+    $response = getJson('api/v1/invoices?overdue=1&limit=100')->assertOk();
+
+    $data = collect($response->json('data'));
+    $ids = $data->pluck('id');
+
+    expect($ids)->toContain($overdueOne->id)
+        ->toContain($overdueTwo->id)
+        ->not->toContain($notOverdue->id);
+    expect($data->every(fn ($invoice) => (bool) $invoice['overdue'] === true))->toBeTrue();
+    expect($data)->toHaveCount(Invoice::where('overdue', true)->count());
+});
+
+test('invoices are not filtered by overdue when overdue filter is false', function () {
+    $overdue = Invoice::factory()->create([
+        'invoice_date' => '1988-07-18',
+        'due_date' => '1988-08-18',
+        'overdue' => true,
+    ]);
+    $notOverdue = Invoice::factory()->create([
+        'invoice_date' => '1988-07-18',
+        'due_date' => '1988-08-18',
+        'overdue' => false,
+    ]);
+
+    $response = getJson('api/v1/invoices?overdue=0&limit=100')->assertOk();
+
+    $ids = collect($response->json('data'))->pluck('id');
+
+    expect($ids)->toContain($overdue->id)
+        ->toContain($notOverdue->id);
+});
+
+test('overdue filter can be combined with paid status filter', function () {
+    $overdueUnpaid = Invoice::factory()->create([
+        'invoice_date' => '1988-07-18',
+        'due_date' => '1988-08-18',
+        'overdue' => true,
+        'paid_status' => Invoice::STATUS_UNPAID,
+    ]);
+    $overduePaid = Invoice::factory()->create([
+        'invoice_date' => '1988-07-18',
+        'due_date' => '1988-08-18',
+        'overdue' => true,
+        'paid_status' => Invoice::STATUS_PAID,
+    ]);
+
+    $response = getJson('api/v1/invoices?overdue=1&status=UNPAID&limit=100')->assertOk();
+
+    $ids = collect($response->json('data'))->pluck('id');
+
+    expect($ids)->toContain($overdueUnpaid->id)
+        ->not->toContain($overduePaid->id);
+});
