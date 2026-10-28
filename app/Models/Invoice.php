@@ -4,12 +4,14 @@ namespace App\Models;
 
 use App;
 use App\Mail\SendInvoiceMail;
+use App\Services\GeminiInvoiceParser;
 use App\Services\SerialNumberFormatter;
 use App\Space\PdfTemplateUtils;
 use App\Traits\GeneratesPdfTrait;
 use App\Traits\HasCustomFieldsTrait;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -366,6 +368,160 @@ class Invoice extends Model implements HasMedia
         }
 
         return $query->paginate($limit);
+    }
+
+    /**
+     * Turn a spoken or typed description into an unsaved invoice draft.
+     *
+     * Customers and items are only linked when exactly one record of the current
+     * company matches; everything that is missing or ambiguous is reported in the warnings.
+     */
+    public static function draftFromText(string $text): array
+    {
+        $today = Carbon::now()->format('Y-m-d');
+        $parsed = app(GeminiInvoiceParser::class)->parse($text, $today);
+        $warnings = [];
+
+        $customer = self::draftCustomer($parsed['customer_name'], $warnings);
+
+        $items = [];
+
+        foreach ($parsed['items'] as $index => $line) {
+            $items[] = self::draftItem($line, $index + 1, $warnings);
+        }
+
+        if (empty($items)) {
+            $warnings[] = ['code' => 'no_items', 'name' => null, 'index' => null];
+        }
+
+        $invoiceDate = self::normalizeDraftDate($parsed['invoice_date']);
+
+        if ($invoiceDate === null && $parsed['invoice_date'] !== null) {
+            $warnings[] = ['code' => 'invoice_date_invalid', 'name' => null, 'index' => null];
+        }
+
+        $dueDate = self::normalizeDraftDate($parsed['due_date']);
+
+        if ($dueDate === null && $parsed['due_date'] !== null) {
+            $warnings[] = ['code' => 'due_date_invalid', 'name' => null, 'index' => null];
+        }
+
+        if ($invoiceDate !== null && $dueDate !== null && $dueDate < $invoiceDate) {
+            $dueDate = null;
+            $warnings[] = ['code' => 'due_date_before_invoice_date', 'name' => null, 'index' => null];
+        }
+
+        return [
+            'text' => $text,
+            'customer' => $customer,
+            'invoice_date' => $invoiceDate,
+            'due_date' => $dueDate,
+            'items' => $items,
+            'warnings' => $warnings,
+        ];
+    }
+
+    private static function draftCustomer(?string $name, array &$warnings): array
+    {
+        if ($name === null) {
+            $warnings[] = ['code' => 'customer_not_mentioned', 'name' => null, 'index' => null];
+
+            return ['status' => 'not_mentioned', 'id' => null, 'name' => null, 'candidates' => []];
+        }
+
+        $matches = Customer::matchByName($name);
+
+        if ($matches->count() === 1) {
+            return ['status' => 'matched', 'id' => $matches->first()->id, 'name' => $matches->first()->name, 'candidates' => []];
+        }
+
+        if ($matches->isEmpty()) {
+            $warnings[] = ['code' => 'customer_not_found', 'name' => $name, 'index' => null];
+
+            return ['status' => 'not_found', 'id' => null, 'name' => $name, 'candidates' => []];
+        }
+
+        $warnings[] = ['code' => 'customer_ambiguous', 'name' => $name, 'index' => null];
+
+        return ['status' => 'ambiguous', 'id' => null, 'name' => $name, 'candidates' => self::draftCandidates($matches)];
+    }
+
+    /**
+     * @param  array{name: string, description: ?string, quantity: int|float|null, price: int|float|null}  $line
+     */
+    private static function draftItem(array $line, int $index, array &$warnings): array
+    {
+        $quantity = $line['quantity'];
+
+        if ($quantity === null || $quantity <= 0) {
+            $quantity = 1;
+            $warnings[] = ['code' => 'quantity_missing', 'name' => $line['name'], 'index' => $index];
+        }
+
+        $quantity = round($quantity, 2);
+
+        $matches = Item::matchByName($line['name']);
+        $item = $matches->count() === 1 ? $matches->first() : null;
+        $candidates = [];
+
+        if ($item) {
+            $status = 'matched';
+        } elseif ($matches->isEmpty()) {
+            $status = 'not_found';
+            $warnings[] = ['code' => 'item_not_found', 'name' => $line['name'], 'index' => $index];
+        } else {
+            $status = 'ambiguous';
+            $candidates = self::draftCandidates($matches);
+            $warnings[] = ['code' => 'item_ambiguous', 'name' => $line['name'], 'index' => $index];
+        }
+
+        // Gemini returns the price in the main currency unit; convert it once to integer cents.
+        if ($line['price'] !== null && $line['price'] >= 0) {
+            $price = (int) round($line['price'] * 100);
+        } elseif ($line['price'] === null && $item) {
+            $price = (int) $item->price;
+        } else {
+            $price = 0;
+            $warnings[] = ['code' => 'price_missing', 'name' => $line['name'], 'index' => $index];
+        }
+
+        return [
+            'name' => $item ? $item->name : $line['name'],
+            'description' => $line['description'] ?? $item?->description,
+            'item_id' => $item?->id,
+            'quantity' => $quantity,
+            'price' => $price,
+            'unit_name' => $item?->unit?->name,
+            'status' => $status,
+            'spoken_name' => $line['name'],
+            'candidates' => $candidates,
+        ];
+    }
+
+    /**
+     * @param  Collection<int, Customer>|Collection<int, Item>  $matches
+     */
+    private static function draftCandidates(Collection $matches): array
+    {
+        return $matches->take(5)
+            ->map(fn ($match) => ['id' => $match->id, 'name' => $match->name])
+            ->values()
+            ->all();
+    }
+
+    private static function normalizeDraftDate(?string $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        try {
+            $date = Carbon::createFromFormat('!Y-m-d', $value);
+        } catch (\Throwable) {
+            return null;
+        }
+
+        return $date && $date->format('Y-m-d') === $value ? $date->format('Y-m-d') : null;
     }
 
     public static function createInvoice($request)

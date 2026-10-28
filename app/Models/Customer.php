@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Notifications\CustomerMailResetPasswordNotification;
 use App\Traits\HasCustomFieldsTrait;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -256,6 +257,41 @@ class Customer extends Authenticatable implements HasMedia
     public function scopeWhereCompany($query)
     {
         return $query->where('customers.company_id', request()->header('company'));
+    }
+
+    /**
+     * Find customers of the current company by name: exact (case-insensitive) matches first, otherwise partial matches.
+     *
+     * @return Collection<int, Customer>
+     */
+    public static function matchByName(string $name): Collection
+    {
+        $name = trim($name);
+        $columns = ['customers.name', 'customers.company_name', 'customers.contact_name'];
+
+        $exact = Customer::whereCompany()
+            ->where(function ($query) use ($columns, $name) {
+                foreach ($columns as $column) {
+                    $query->orWhereRaw("LOWER({$column}) = ?", [mb_strtolower($name)]);
+                }
+            })
+            ->orderBy('customers.name')
+            ->limit(6)
+            ->get();
+
+        if ($exact->isNotEmpty()) {
+            return $exact;
+        }
+
+        return Customer::whereCompany()
+            ->where(function ($query) use ($columns, $name) {
+                foreach ($columns as $column) {
+                    $query->orWhere($column, 'LIKE', '%'.$name.'%');
+                }
+            })
+            ->orderBy('customers.name')
+            ->limit(6)
+            ->get();
     }
 
     public function scopeWhereContactName($query, $contactName)
