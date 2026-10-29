@@ -22,7 +22,7 @@ Laravel 11 API (`routes/api.php`, prefix `/api/v1`) with a Vue 3 single-page fro
 - Admin pages live in `resources/scripts/admin/views/<domain>/`, routes in `resources/scripts/admin/admin-router.js`, and API calls go through the Pinia stores in `resources/scripts/admin/stores/`.
 - Reuse the existing `Base*` components (`BaseInputGroup`, `BaseMoney`, `BaseButton`, ...) instead of plain HTML elements.
 - All user-facing text goes through `$t(...)` with the keys added to `lang/en.json`.
-- Run `npm run test` (ESLint) on changed frontend code.
+- Run `npm run build` after changing frontend code to make sure it still compiles. (`npm run test` runs ESLint, but its config predates ESLint 9 and does not load.)
 
 ## Tests
 
