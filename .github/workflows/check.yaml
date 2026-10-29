@@ -7,14 +7,14 @@ on:
             - '**/*.md'
             - 'public/build/*.js'
             - 'public/build/**/*.js'
-        branches-ignore:    
+        branches-ignore:
             - 'translations'
     pull_request:
         paths-ignore:
             - '**/*.md'
             - 'public/build/*.js'
             - 'public/build/**/*.js'
-        branches-ignore:    
+        branches-ignore:
             - 'translations'
     # Allow manually triggering the workflow.
     workflow_dispatch:
@@ -40,7 +40,7 @@ jobs:
             - name: Set up PHP
               uses: shivammathur/setup-php@v2
               with:
-                  php-version: 8.2
+                  php-version: 8.5
 
             - name: Checkout code
               uses: actions/checkout@v4
@@ -59,8 +59,7 @@ jobs:
         strategy:
             matrix:
                 php-version:
-                    - 8.2
-                    - 8.3
+                    - 8.5
         env:
             extensions: bcmath, curl, dom, gd, imagick, json, libxml, mbstring, pcntl, pdo, pdo_mysql, zip
 
@@ -109,7 +108,7 @@ jobs:
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
               with:
-                  php-version: 8.2
+                  php-version: 8.5
                   extensions: ${{ env.extensions }}
                   coverage: none
 
