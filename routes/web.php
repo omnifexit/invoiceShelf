@@ -13,7 +13,6 @@ use App\Http\Controllers\V1\Customer\InvoicePdfController as CustomerInvoicePdfC
 use App\Http\Controllers\V1\Customer\PaymentPdfController as CustomerPaymentPdfController;
 use App\Http\Controllers\V1\Modules\ScriptController;
 use App\Http\Controllers\V1\Modules\StyleController;
-use App\Http\Controllers\V1\PDF\CreditNotePdfController;
 use App\Http\Controllers\V1\PDF\DownloadReceiptController;
 use App\Http\Controllers\V1\PDF\EstimatePdfController;
 use App\Http\Controllers\V1\PDF\InvoicePdfController;
@@ -93,10 +92,6 @@ Route::middleware('pdf-auth')->group(function () {
     // payment pdf
     // -------------------------------------------------
     Route::get('/payments/pdf/{payment:unique_hash}', PaymentPdfController::class);
-
-    // credit note pdf
-    // -------------------------------------------------
-    Route::get('/credit-notes/pdf/{creditNote:unique_hash}', CreditNotePdfController::class);
 });
 
 // customer pdf endpoints for invoice, estimate and Payment

@@ -204,28 +204,6 @@
                 </p>
             </td>
         </tr>
-        @if ($totalCreditedTaxAmount > 0)
-        <tr>
-            <td>
-                <p class="report-footer-label">@lang('pdf_credited_tax_label')</p>
-            </td>
-            <td>
-                <p class="report-footer-value">
-                    - {!! format_money_pdf($totalCreditedTaxAmount, $currency) !!}
-                </p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <p class="report-footer-label">@lang('pdf_net_tax_label')</p>
-            </td>
-            <td>
-                <p class="report-footer-value">
-                    {!! format_money_pdf($netTaxAmount, $currency) !!}
-                </p>
-            </td>
-        </tr>
-        @endif
     </table>
 </body>
 

@@ -34,40 +34,24 @@ class CustomerSalesReportController extends Controller
         $start = Carbon::createFromFormat('Y-m-d', $request->from_date);
         $end = Carbon::createFromFormat('Y-m-d', $request->to_date);
 
-        $creditNotesInPeriod = function ($query) use ($start, $end) {
+        $customers = Customer::with(['invoices' => function ($query) use ($start, $end) {
             $query->whereBetween(
-                'credit_note_date',
+                'invoice_date',
                 [$start->format('Y-m-d'), $end->format('Y-m-d')]
             );
-        };
-
-        $customers = Customer::with([
-            'invoices' => function ($query) use ($start, $end) {
-                $query->whereBetween(
-                    'invoice_date',
-                    [$start->format('Y-m-d'), $end->format('Y-m-d')]
-                );
-            },
-            'creditNotes' => $creditNotesInPeriod,
-        ])
+        }])
             ->where('company_id', $company->id)
-            ->where(function ($query) use ($request, $creditNotesInPeriod) {
-                $query->applyInvoiceFilters($request->only(['from_date', 'to_date']))
-                    ->orWhereHas('creditNotes', $creditNotesInPeriod);
-            })
+            ->applyInvoiceFilters($request->only(['from_date', 'to_date']))
             ->get();
 
         $totalAmount = 0;
-        $totalCreditedAmount = 0;
         foreach ($customers as $customer) {
             $customerTotalAmount = 0;
             foreach ($customer->invoices as $invoice) {
                 $customerTotalAmount += $invoice->base_total;
             }
-            $creditedAmount = (int) $customer->creditNotes->sum('base_amount');
-            $customer->totalAmount = $customerTotalAmount - $creditedAmount;
-            $totalAmount += $customerTotalAmount - $creditedAmount;
-            $totalCreditedAmount += $creditedAmount;
+            $customer->totalAmount = $customerTotalAmount;
+            $totalAmount += $customerTotalAmount;
         }
 
         $dateFormat = CompanySetting::getSetting('carbon_date_format', $company->id);
@@ -94,7 +78,6 @@ class CustomerSalesReportController extends Controller
         view()->share([
             'customers' => $customers,
             'totalAmount' => $totalAmount,
-            'totalCreditedAmount' => $totalCreditedAmount,
             'colorSettings' => $colorSettings,
             'company' => $company,
             'from_date' => $from_date,

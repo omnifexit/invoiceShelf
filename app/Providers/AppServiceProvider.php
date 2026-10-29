@@ -4,7 +4,6 @@ namespace App\Providers;
 
 use App\Bouncer\Scopes\DefaultScope;
 use App\Policies\CompanyPolicy;
-use App\Policies\CreditNotePolicy;
 use App\Policies\CustomerPolicy;
 use App\Policies\DashboardPolicy;
 use App\Policies\EstimatePolicy;
@@ -144,7 +143,6 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('delete multiple estimates', [EstimatePolicy::class, 'deleteMultiple']);
         Gate::define('delete multiple expenses', [ExpensePolicy::class, 'deleteMultiple']);
         Gate::define('delete multiple payments', [PaymentPolicy::class, 'deleteMultiple']);
-        Gate::define('delete multiple credit notes', [CreditNotePolicy::class, 'deleteMultiple']);
         Gate::define('delete multiple recurring invoices', [RecurringInvoicePolicy::class, 'deleteMultiple']);
 
         Gate::define('view dashboard', [DashboardPolicy::class, 'view']);

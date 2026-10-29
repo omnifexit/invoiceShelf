@@ -30,7 +30,6 @@ class DeleteInvoiceRequest extends FormRequest
                 'required',
                 Rule::exists('invoices', 'id'),
                 new RelationNotExist(Invoice::class, 'payments'),
-                new RelationNotExist(Invoice::class, 'creditNotes'),
             ],
         ];
     }
